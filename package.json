@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@types/node": "^22.14.1",
+    "@unocss/preset-attributify": "66.1.0-beta.12",
+    "@vueuse/core": "^13.1.0",
     "pinia": "^3.0.2",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
@@ -18,6 +20,7 @@
     "@antfu/eslint-config": "^4.12.0",
     "@arco-design/web-vue": "^2.57.0",
     "@unocss/eslint-plugin": "^66.0.0",
+    "@unocss/transformer-directives": "66.1.0-beta.12",
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/tsconfig": "^0.7.0",
     "eslint": "^9.24.0",
