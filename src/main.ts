@@ -3,8 +3,9 @@ import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import '@arco-design/web-vue/dist/arco.css'
+import '@arco-design/web-vue/dist/arco.less'
 import 'virtual:uno.css'
+import './style.css'
 
 const app = createApp(App)
 const pinia = createPinia()
