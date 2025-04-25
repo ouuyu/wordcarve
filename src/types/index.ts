@@ -17,3 +17,21 @@ export interface StudyDataEntry {
 export interface StudyData {
   [wordId: string]: StudyDataEntry
 }
+
+export interface DictionaryEntry {
+  word: string
+  phonetic: string
+  definition: string[]
+  translation: string[]
+  pos: {
+    [key: string]: number
+  }
+  collins?: number
+  oxford?: number
+  tag?: string[]
+  bnc?: number
+  frq?: number
+  exchange?: {
+    [key: string]: string
+  }
+}

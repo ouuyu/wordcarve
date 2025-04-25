@@ -1,0 +1,16 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Vue.js best practices and patterns for modern web applications
+globs: **/*.vue, **/*.ts, components/**/*
+---
+
+- 本项目使用组件库 Arco Design Vue, 应当尽量使用组件
+
+- 本项目使用 UnoCSS 来进行样式管理和布局控制
+
+
+- 本项目使用 Pinia 来进行状态管理
