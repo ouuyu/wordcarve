@@ -1,21 +1,35 @@
 <script setup lang="ts">
-import { IconUser } from '@arco-design/web-vue/es/icon'
+import { IconSettings, IconUser } from '@arco-design/web-vue/es/icon'
+import { onMounted } from 'vue'
+import { useDictionaryStore } from './stores/dictionaryStore'
+
+const dictionaryStore = useDictionaryStore()
 
 const navItems = [
   { path: '/', label: '首页' },
   { path: '/search', label: '搜索' },
 ]
+
+onMounted(async () => {
+  try {
+    const result = await dictionaryStore.loadDictionary()
+    console.log(`字典数据加载${result ? '成功' : '失败'}，共 ${dictionaryStore.dictionary.length} 个单词`)
+  }
+  catch (error) {
+    console.error('加载字典数据失败:', error)
+  }
+})
 </script>
 
 <template>
-  <div class="bg-arcoblue-1 min-h-screen flex flex-col">
+  <div class="min-h-screen flex flex-col bg-arcoblue-1">
     <!-- 顶栏 -->
-    <header class="bg-arcoblue-1 h-16 flex items-center justify-between px-8 shadow-sm">
+    <header class="h-16 flex items-center justify-between bg-arcoblue-1 px-8 shadow-sm">
       <div class="flex items-center text-6 font-bold">
         词刻
       </div>
       <nav class="flex gap-10">
-        <router-link
+        <router-link 
           v-for="item in navItems"
           :key="item.path"
           :to="item.path"
@@ -24,8 +38,11 @@ const navItems = [
           {{ item.label }}
         </router-link>
       </nav>
-      <div class="cursor-pointer">
-        <a-avatar class="bg-arcoblue-3">
+      <div class="flex items-center gap-4">
+        <router-link to="/settings" class="flex items-center">
+          <IconSettings class="text-xl" />
+        </router-link>
+        <a-avatar class="bg-arcoblue-3 cursor-pointer">
           <template #icon>
             <IconUser class="text-white" />
           </template>
@@ -39,7 +56,7 @@ const navItems = [
     </main>
 
     <!-- 底栏 -->
-    <footer class="bg-arcoblue-4 mt-auto px-8 py-6">
+    <footer class="mt-auto bg-arcoblue-4 px-8 py-6">
       <div class="mx-auto max-w-1200px flex items-center justify-between">
         <p>
           © 2025 词刻 WordCarve. 保留所有权利.

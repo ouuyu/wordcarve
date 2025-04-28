@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { Message } from '@arco-design/web-vue'
-import { IconDelete, IconDownload, IconSettings, IconUpload } from '@arco-design/web-vue/es/icon'
+import { IconDelete, IconDownload, IconUpload } from '@arco-design/web-vue/es/icon'
 import { ref } from 'vue'
 import { useDictionaryStore } from '../../stores/dictionaryStore'
 
 const dictionaryStore = useDictionaryStore()
 const uploading = ref(false)
-const showModal = ref(false)
 
-function handleFileUpload(options: any) {
+async function handleFileUpload(options: any) {
   uploading.value = true
-  // 获取文件对象，在Arco中可能是options.file或options.fileItem.file
   const fileObj = options.file || (options.fileItem && options.fileItem.file)
 
   if (!fileObj) {
@@ -23,14 +21,14 @@ function handleFileUpload(options: any) {
 
   const reader = new FileReader()
 
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     try {
       if (e.target?.result) {
         const result = e.target.result as string
-        const success = dictionaryStore.importDictionary(result)
+        console.log('读取到文件内容，准备导入')
+        const success = await dictionaryStore.importDictionary(result)
 
         if (success) {
-          dictionaryStore.saveDictionary()
           Message.success(`成功导入字典，共 ${dictionaryStore.dictionary.length} 个单词`)
           options.onSuccess && options.onSuccess()
         }
@@ -71,6 +69,11 @@ function handleFileUpload(options: any) {
 
 function exportDictionary() {
   try {
+    if (dictionaryStore.dictionary.length === 0) {
+      Message.warning('字典为空，无法导出')
+      return
+    }
+    
     const dictData = JSON.stringify(dictionaryStore.dictionary, null, 2)
     const blob = new Blob([dictData], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -90,106 +93,92 @@ function exportDictionary() {
   }
 }
 
-function clearDictionary() {
-  dictionaryStore.clearDictionary()
+async function clearDictionary() {
+  await dictionaryStore.clearDictionary()
   Message.success('字典已清空')
-}
-
-function openModal() {
-  showModal.value = true
-}
-
-function closeModal() {
-  showModal.value = false
 }
 </script>
 
 <template>
   <div class="dictionary-manager">
-    <a-button type="outline" @click="openModal">
-      <template #icon>
-        <IconSettings />
-      </template>
-      字典管理
-    </a-button>
+    <div class="mb-6">
+      <p class="mb-2 text-gray-600">
+        当前词库: {{ dictionaryStore.dictionary.length }} 个单词
+      </p>
+    </div>
 
-    <a-modal
-      v-model:visible="showModal"
-      title="字典管理"
-      :mask-closable="false"
-      :footer="false"
-      width="500px"
-    >
-      <div class="flex flex-col gap-4">
-        <div>
-          <h3 class="text-md mb-2 font-bold">
-            导入字典
-          </h3>
-          <p class="mb-4 text-sm text-gray-500">
-            导入 JSON 格式的字典文件
-          </p>
-
-          <a-upload
-            :custom-request="handleFileUpload"
-            :limit="1"
-            :multiple="false"
-            accept=".json"
-            :show-file-list="false"
-          >
-            <a-button type="primary" :loading="uploading">
-              <template #icon>
-                <IconUpload />
-              </template>
-              选择字典文件
-            </a-button>
-          </a-upload>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <!-- Import Dictionary -->
+      <div class="flex flex-col items-center rounded-lg border border-gray-100 bg-gray-50/50 p-4 transition-all">
+        <div class="mb-2 text-lg text-gray-700">
+          <IconUpload />
         </div>
-
-        <a-divider />
-
-        <div>
-          <h3 class="text-md mb-2 font-bold">
-            当前字典状态
-          </h3>
-          <div class="text-sm">
-            <p>已加载单词数量: <span class="font-bold">{{ dictionaryStore.dictionary.length }}</span></p>
-          </div>
-
-          <div class="mt-4 flex gap-4">
-            <a-button
-              :disabled="!dictionaryStore.dictionary.length"
-              @click="exportDictionary"
-            >
-              <template #icon>
-                <IconDownload />
-              </template>
-              导出字典
-            </a-button>
-
-            <a-popconfirm
-              content="确定要清空当前字典吗？此操作不可撤销。"
-              type="warning"
-              @ok="clearDictionary"
-            >
-              <a-button
-                status="danger"
-                :disabled="!dictionaryStore.dictionary.length"
-              >
-                <template #icon>
-                  <IconDelete />
-                </template>
-                清空字典
-              </a-button>
-            </a-popconfirm>
-          </div>
-        </div>
+        <h3 class="mb-2 text-center font-medium">
+          导入字典
+        </h3>
+        <p class="mb-4 text-center text-sm text-gray-500">
+          从 JSON 文件导入
+        </p>
+        <a-upload
+          action="/"
+          accept=".json"
+          :auto-upload="true"
+          :show-file-list="false"
+          :custom-request="handleFileUpload"
+          :loading="uploading"
+        >
+          <a-button type="outline" size="small">
+            选择文件
+          </a-button>
+        </a-upload>
       </div>
 
-      <template #footer>
-        <a-button @click="closeModal">
-          关闭
+      <!-- Export Dictionary -->
+      <div class="flex flex-col items-center rounded-lg border border-gray-100 bg-gray-50/50 p-4 transition-all">
+        <div class="mb-2 text-lg text-gray-700">
+          <IconDownload />
+        </div>
+        <h3 class="mb-2 text-center font-medium">
+          导出字典
+        </h3>
+        <p class="mb-4 text-center text-sm text-gray-500">
+          保存为 JSON 文件
+        </p>
+        <a-button 
+          type="outline" 
+          size="small"
+          :disabled="!dictionaryStore.dictionary.length"
+          @click="exportDictionary"
+        >
+          导出词库
         </a-button>
-      </template>
-    </a-modal>
+      </div>
+
+      <!-- Clear Dictionary -->
+      <div class="flex flex-col items-center rounded-lg border border-gray-100 bg-gray-50/50 p-4 transition-all">
+        <div class="mb-2 text-lg text-gray-700">
+          <IconDelete />
+        </div>
+        <h3 class="mb-2 text-center font-medium">
+          清空字典
+        </h3>
+        <p class="mb-4 text-center text-sm text-gray-500">
+          删除所有词条
+        </p>
+        <a-popconfirm
+          content="确定要清空字典吗？此操作不可撤销。"
+          @ok="clearDictionary"
+        >
+          <a-button 
+            type="outline" 
+            status="danger" 
+            size="small"
+            :disabled="!dictionaryStore.dictionary.length"
+          >
+            清空词库
+          </a-button>
+        </a-popconfirm>
+      </div>
+    </div>
   </div>
 </template>

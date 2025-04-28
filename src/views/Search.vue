@@ -2,8 +2,7 @@
 import type { DictionaryEntry } from '../types'
 import { Message } from '@arco-design/web-vue'
 import { IconBook } from '@arco-design/web-vue/es/icon'
-import { onMounted, ref } from 'vue'
-import DictionaryManager from '../components/dictionary/DictionaryManager.vue'
+import { onMounted, ref, nextTick } from 'vue'
 import WordDisplay from '../components/dictionary/WordDisplay.vue'
 import { useDictionaryStore } from '../stores/dictionaryStore'
 
@@ -12,6 +11,7 @@ const loading = ref(false)
 const dictionaryStore = useDictionaryStore()
 const searchResult = ref<DictionaryEntry | null>(null)
 const recentSearches = ref<string[]>([])
+const searchInputRef = ref<HTMLInputElement | null>(null)
 
 async function searchWord() {
   if (!searchQuery.value.trim()) {
@@ -33,6 +33,11 @@ async function searchWord() {
         // Save to localStorage
         localStorage.setItem('recent-searches', JSON.stringify(recentSearches.value))
       }
+      // Clear input after successful search
+      nextTick(() => {
+        searchQuery.value = ''
+        focusSearchInput()
+      })
     }
     else {
       Message.info('没有找到该单词')
@@ -52,6 +57,10 @@ function handleRecentSearch(word: string) {
   searchWord()
 }
 
+function focusSearchInput() {
+  searchInputRef.value?.focus()
+}
+
 onMounted(() => {
   // Load the dictionary
   if (!dictionaryStore.dictionary.length) {
@@ -68,43 +77,43 @@ onMounted(() => {
   catch (error) {
     console.error('Failed to load recent searches:', error)
   }
+  
+  // Focus the search input on page load
+  focusSearchInput()
 })
 </script>
 
 <template>
-  <div class="search-page">
-    <div class="mb-6 flex items-center justify-between">
-      <h1 class="text-2xl font-bold">
-        单词查询
-      </h1>
-      <DictionaryManager />
-    </div>
-
-    <div class="search-container mb-8">
-      <a-input-search
+  <div class="search-page min-h-screen w-full" @click="focusSearchInput">
+    <!-- 上端搜索区域 -->
+    <div class="flex flex-col items-start px-8 py-16 sm:px-12 md:px-16 lg:px-24">
+      <input
+        ref="searchInputRef"
         v-model="searchQuery"
-        placeholder="输入要查询的单词"
-        search-button
-        allow-clear
-        :loading="loading"
-        class="mb-4 max-w-md"
-        @search="searchWord"
-        @press-enter="searchWord"
+        type="text"
+        placeholder="输入单词..."
+        class="w-full max-w-xl border-b border-transparent bg-transparent text-left text-4xl font-light outline-none focus:border-b-gray-200/30"
+        :class="{ 'opacity-50': loading }"
+        @keyup.enter="searchWord"
       />
+      
+      <p v-if="!searchResult && !loading" class="mt-4 text-sm text-gray-400/50">
+        按回车键查询
+      </p>
+      
+      <div v-if="loading" class="mt-6">
+        <a-spin dot />
+      </div>
 
-      <!-- Recent searches -->
-      <div v-if="recentSearches.length" class="mt-2">
-        <p class="mb-2 text-sm text-gray-500">
-          最近搜索:
-        </p>
+      <!-- Recent searches as floating pills -->
+      <div v-if="recentSearches.length && !searchResult" class="mt-6 w-full max-w-xl">
         <div class="flex flex-wrap gap-2">
           <a-tag
             v-for="word in recentSearches"
             :key="word"
-            size="small"
-            checkable
-            checked
-            class="cursor-pointer"
+            size="medium"
+            bordered
+            class="cursor-pointer border-gray-200/30 bg-transparent px-3 py-1 hover:border-gray-300/50"
             @click="handleRecentSearch(word)"
           >
             {{ word }}
@@ -113,13 +122,28 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Search result -->
-    <WordDisplay v-if="searchResult" :word="searchResult" class="mb-6 max-w-3xl" />
+    <!-- 下端结果区域 -->
+    <div v-if="searchResult" class="mt-4 flex w-full justify-center px-8 sm:px-12 md:px-16 lg:px-24">
+      <div class="w-full max-w-3xl">
+        <WordDisplay 
+          :word="searchResult" 
+          class="rounded-lg border border-gray-100/20 bg-white/10 p-6 shadow-sm" 
+        />
+        <div class="mt-4 text-right">
+          <a-tag
+            class="cursor-pointer border-gray-200/20 bg-transparent px-4 py-2 text-sm"
+            @click="searchResult = null; focusSearchInput()"
+          >
+            返回搜索
+          </a-tag>
+        </div>
+      </div>
+    </div>
 
     <!-- No dictionary loaded message -->
     <a-empty
       v-if="!dictionaryStore.dictionary.length"
-      class="mt-8"
+      class="absolute left-0 right-0 top-1/2 -translate-y-1/2"
       description="没有加载字典数据"
     >
       <template #image>
@@ -128,3 +152,5 @@ onMounted(() => {
     </a-empty>
   </div>
 </template>
+
+<style scoped></style>
