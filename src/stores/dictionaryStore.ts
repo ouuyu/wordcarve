@@ -9,16 +9,16 @@ interface DictionaryState {
 }
 
 // 创建数据库实例，使用 'word' 字段作为键路径
-const db = new IndexedDB('wordcarve', 'dictionary', { 
-  keyPath: 'word', 
-  useInlineKeys: true 
+const db = new IndexedDB('wordcarve', 'dictionary', {
+  keyPath: 'word',
+  useInlineKeys: true,
 })
 
 export const useDictionaryStore = defineStore('dictionary', {
   state: (): DictionaryState => ({
     dictionary: [],
     currentWord: null,
-    isLoaded: false
+    isLoaded: false,
   }),
 
   getters: {
@@ -40,19 +40,20 @@ export const useDictionaryStore = defineStore('dictionary', {
         await db.deleteDatabase()
         console.log('数据库已删除，创建新的数据库实例')
         // 创建一个新的数据库实例
-        const newDb = new IndexedDB('wordcarve', 'dictionary', { 
-          keyPath: 'word', 
-          useInlineKeys: true 
+        const newDb = new IndexedDB('wordcarve', 'dictionary', {
+          keyPath: 'word',
+          useInlineKeys: true,
         })
-        
+
         // 更新全局数据库引用
         Object.assign(db, newDb)
-        
+
         this.dictionary = []
         this.currentWord = null
         this.isLoaded = false
         console.log('数据库重置完成')
-      } catch (error) {
+      }
+      catch (error) {
         console.error('重置数据库失败:', error)
         throw error
       }
@@ -69,26 +70,26 @@ export const useDictionaryStore = defineStore('dictionary', {
 
         if (Array.isArray(parsedDictionary)) {
           // 确保所有词条都有 word 字段
-          const validEntries = parsedDictionary.filter(entry => 
-            entry && typeof entry === 'object' && 'word' in entry && 
-            typeof entry.word === 'string'
+          const validEntries = parsedDictionary.filter(entry =>
+            entry && typeof entry === 'object' && 'word' in entry
+            && typeof entry.word === 'string',
           ) as DictionaryEntry[]
-          
+
           if (validEntries.length === 0) {
             console.error('没有有效的词条，所有词条都必须有 word 字段')
             return false
           }
-          
+
           console.log(`过滤后有 ${validEntries.length} 个有效词条，开始批量导入`)
-          
+
           // 分批导入，以避免一次处理过多数据
           const batchSize = 1000
           for (let i = 0; i < validEntries.length; i += batchSize) {
             const batch = validEntries.slice(i, i + batchSize)
-            console.log(`导入批次 ${i/batchSize + 1}/${Math.ceil(validEntries.length/batchSize)}, 大小: ${batch.length}`)
+            console.log(`导入批次 ${i / batchSize + 1}/${Math.ceil(validEntries.length / batchSize)}, 大小: ${batch.length}`)
             await db.bulkPut(batch)
           }
-          
+
           // 重新加载字典
           console.log('批量导入完成，加载字典数据')
           await this.loadDictionary()
@@ -104,27 +105,27 @@ export const useDictionaryStore = defineStore('dictionary', {
           else {
             // 词条对象，转换为数组并过滤有效条目
             const entriesArray = Object.values(parsedDictionary)
-            const validEntries = entriesArray.filter(entry => 
-              entry && typeof entry === 'object' && 'word' in entry && 
-              typeof (entry as any).word === 'string'
+            const validEntries = entriesArray.filter(entry =>
+              entry && typeof entry === 'object' && 'word' in entry
+              && typeof (entry as any).word === 'string',
             ) as DictionaryEntry[]
-            
+
             if (validEntries.length === 0) {
               console.error('没有有效的词条，所有词条都必须有 word 字段')
               return false
             }
-            
+
             console.log(`从对象中提取了 ${validEntries.length} 个有效词条，开始批量导入`)
-            
+
             // 分批导入，以避免一次处理过多数据
             const batchSize = 1000
             for (let i = 0; i < validEntries.length; i += batchSize) {
               const batch = validEntries.slice(i, i + batchSize)
-              console.log(`导入批次 ${i/batchSize + 1}/${Math.ceil(validEntries.length/batchSize)}, 大小: ${batch.length}`)
+              console.log(`导入批次 ${i / batchSize + 1}/${Math.ceil(validEntries.length / batchSize)}, 大小: ${batch.length}`)
               await db.bulkPut(batch)
             }
           }
-          
+
           // 重新加载字典
           console.log('导入完成，加载字典数据')
           await this.loadDictionary()
@@ -162,15 +163,16 @@ export const useDictionaryStore = defineStore('dictionary', {
           console.error('词条必须有 word 字段')
           return
         }
-        
+
         // 直接添加或更新词条
         await db.put(word)
-        
+
         // 更新本地状态
         const existingIndex = this.dictionary.findIndex(entry => entry.word === word.word)
         if (existingIndex >= 0) {
           this.dictionary[existingIndex] = word
-        } else {
+        }
+        else {
           this.dictionary.push(word)
         }
       }
@@ -184,7 +186,7 @@ export const useDictionaryStore = defineStore('dictionary', {
       try {
         // 从数据库中删除
         await db.delete(word)
-        
+
         // 更新本地状态
         this.dictionary = this.dictionary.filter(entry => entry.word !== word)
       }

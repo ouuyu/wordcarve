@@ -13,7 +13,7 @@ const navItems = [
 onMounted(async () => {
   try {
     const result = await dictionaryStore.loadDictionary()
-    console.log(`字典数据加载${result ? '成功' : '失败'}，共 ${dictionaryStore.dictionary.length} 个单词`)
+    console.warn(`字典数据加载${result ? '成功' : '失败'}，共 ${dictionaryStore.dictionary.length} 个单词`)
   }
   catch (error) {
     console.error('加载字典数据失败:', error)
@@ -29,12 +29,7 @@ onMounted(async () => {
         词刻
       </div>
       <nav class="flex gap-10">
-        <router-link 
-          v-for="item in navItems"
-          :key="item.path"
-          :to="item.path"
-          class="link"
-        >
+        <router-link v-for="item in navItems" :key="item.path" :to="item.path" class="link">
           {{ item.label }}
         </router-link>
       </nav>
@@ -42,7 +37,7 @@ onMounted(async () => {
         <router-link to="/settings" class="flex items-center">
           <IconSettings class="text-xl" />
         </router-link>
-        <a-avatar class="bg-arcoblue-3 cursor-pointer">
+        <a-avatar class="cursor-pointer bg-arcoblue-3">
           <template #icon>
             <IconUser class="text-white" />
           </template>

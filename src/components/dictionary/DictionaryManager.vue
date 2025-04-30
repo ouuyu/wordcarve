@@ -73,7 +73,7 @@ function exportDictionary() {
       Message.warning('字典为空，无法导出')
       return
     }
-    
+
     const dictData = JSON.stringify(dictionaryStore.dictionary, null, 2)
     const blob = new Blob([dictData], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -109,7 +109,7 @@ async function clearDictionary() {
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
       <!-- Import Dictionary -->
-      <div class="flex flex-col items-center rounded-lg border border-gray-100 bg-gray-50/50 p-4 transition-all">
+      <div class="flex flex-col items-center border border-gray-100 rounded-lg bg-gray-50/50 p-4 transition-all">
         <div class="mb-2 text-lg text-gray-700">
           <IconUpload />
         </div>
@@ -134,7 +134,7 @@ async function clearDictionary() {
       </div>
 
       <!-- Export Dictionary -->
-      <div class="flex flex-col items-center rounded-lg border border-gray-100 bg-gray-50/50 p-4 transition-all">
+      <div class="flex flex-col items-center border border-gray-100 rounded-lg bg-gray-50/50 p-4 transition-all">
         <div class="mb-2 text-lg text-gray-700">
           <IconDownload />
         </div>
@@ -144,8 +144,8 @@ async function clearDictionary() {
         <p class="mb-4 text-center text-sm text-gray-500">
           保存为 JSON 文件
         </p>
-        <a-button 
-          type="outline" 
+        <a-button
+          type="outline"
           size="small"
           :disabled="!dictionaryStore.dictionary.length"
           @click="exportDictionary"
@@ -155,7 +155,7 @@ async function clearDictionary() {
       </div>
 
       <!-- Clear Dictionary -->
-      <div class="flex flex-col items-center rounded-lg border border-gray-100 bg-gray-50/50 p-4 transition-all">
+      <div class="flex flex-col items-center border border-gray-100 rounded-lg bg-gray-50/50 p-4 transition-all">
         <div class="mb-2 text-lg text-gray-700">
           <IconDelete />
         </div>
@@ -169,9 +169,9 @@ async function clearDictionary() {
           content="确定要清空字典吗？此操作不可撤销。"
           @ok="clearDictionary"
         >
-          <a-button 
-            type="outline" 
-            status="danger" 
+          <a-button
+            type="outline"
+            status="danger"
             size="small"
             :disabled="!dictionaryStore.dictionary.length"
           >

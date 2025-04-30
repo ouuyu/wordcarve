@@ -9,7 +9,7 @@ import DictionaryManager from '../components/dictionary/DictionaryManager.vue'
         <h2 class="mb-4 text-xl font-semibold">
           字典管理
         </h2>
-        <div class="card rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
+        <div class="card border border-gray-100 rounded-lg bg-white p-6 shadow-sm">
           <DictionaryManager />
         </div>
       </div>
@@ -18,7 +18,7 @@ import DictionaryManager from '../components/dictionary/DictionaryManager.vue'
         <h2 class="mb-4 text-xl font-semibold">
           其他设置
         </h2>
-        <div class="card rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
+        <div class="card border border-gray-100 rounded-lg bg-white p-6 shadow-sm">
           <p class="text-gray-500">
             更多设置功能即将推出...
           </p>
@@ -28,4 +28,4 @@ import DictionaryManager from '../components/dictionary/DictionaryManager.vue'
   </div>
 </template>
 
-<style scoped></style> 
+<style scoped></style>
