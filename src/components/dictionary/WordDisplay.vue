@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '../../types'
+import { Message } from '@arco-design/web-vue'
 import { ref } from 'vue'
+import { playWordPronunciation, PronunciationType } from '../../utils/audio'
 
-defineProps<{
+const props = defineProps<{
   word: DictionaryEntry
 }>()
 
-// 定义导航项
+// 导航项
 const navItems = [
   { id: 'dictionary', label: '词典释义' },
   { id: 'examples', label: '例句' },
@@ -38,6 +40,16 @@ const tagMapping: Record<string, string> = {
 function getTagDisplay(tag: string): string {
   return tagMapping[tag] || tag
 }
+
+// 添加发音功能
+async function playPronunciation(type: PronunciationType) {
+  try {
+    await playWordPronunciation(props.word.word, type)
+  }
+  catch {
+    Message.error('播放发音失败')
+  }
+}
 </script>
 
 <template>
@@ -64,6 +76,14 @@ function getTagDisplay(tag: string): string {
             </h1>
             <div class="flex items-center gap-2">
               <span class="text-gray-600">/{{ word.phonetic }}/</span>
+              <div class="flex gap-2">
+                <a-button type="text" size="mini" @click="playPronunciation(PronunciationType.US)">
+                  美
+                </a-button>
+                <a-button type="text" size="mini" @click="playPronunciation(PronunciationType.UK)">
+                  英
+                </a-button>
+              </div>
             </div>
           </div>
         </div>
