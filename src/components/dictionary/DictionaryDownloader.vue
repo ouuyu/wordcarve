@@ -1,16 +1,23 @@
 <script setup lang="ts">
 import { Message } from '@arco-design/web-vue'
 import { IconDownload } from '@arco-design/web-vue/es/icon'
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useDictionaryStore } from '../../stores/dictionaryStore'
 
 const emit = defineEmits(['close'])
 const dictionaryStore = useDictionaryStore()
+const isMobile = computed(() => window.innerWidth < 768)
+
 const predefinedUrls = [
   {
     name: 'COCA 高频词',
     url: 'https://cdn.jsdelivr.net/gh/wordcarve/oss@latest/frq-15k.min.json',
     description: '基于 COCA 语料库的 13000+ 高频词',
+  },
+  {
+    name: 'demo',
+    url: 'https://demo',
+    description: '基于 demo 语料库的 13000+ 高频词(精简版)',
   },
 ]
 
@@ -139,15 +146,15 @@ function cancelDownload() {
 </script>
 
 <template>
-  <div>
+  <div class="p-4">
+    <!-- 下载进度模态框 -->
     <a-modal
       v-model:visible="downloadStatus.isDownloading"
+      title="下载进度"
       :footer="false"
       :mask-closable="false"
-      :closable="false"
-      :esc-to-close="false"
-      simple
-      modal-class="download-modal"
+      :width="isMobile ? '95%' : '500px'"
+      class="download-modal"
     >
       <div class="flex flex-col items-center justify-center p-6">
         <a-spin :size="40" />
@@ -175,8 +182,8 @@ function cancelDownload() {
 
     <a-divider>预置词库</a-divider>
 
-    <a-row :gutter="16">
-      <a-col v-for="(dict, index) in predefinedUrls" :key="index" :span="12">
+    <a-row :gutter="[16, 16]" class="justify-center">
+      <a-col v-for="(dict, index) in predefinedUrls" :key="index" :span="24" :lg="12">
         <a-card class="mb-4">
           <template #title>
             {{ dict.name }}
@@ -184,7 +191,7 @@ function cancelDownload() {
           <p class="mb-2 text-sm text-gray-500">
             {{ dict.description }}
           </p>
-          <div class="mb-3 truncate text-xs text-gray-400">
+          <div class="mb-3 break-all text-xs text-gray-400">
             {{ dict.url }}
           </div>
           <a-button

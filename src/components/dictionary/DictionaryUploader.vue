@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Message } from '@arco-design/web-vue'
-import { IconUpload } from '@arco-design/web-vue/es/icon'
 import { ref } from 'vue'
 import { useDictionaryStore } from '../../stores/dictionaryStore'
 

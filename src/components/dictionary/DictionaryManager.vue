@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Message } from '@arco-design/web-vue'
 import { IconDelete, IconDownload, IconUpload } from '@arco-design/web-vue/es/icon'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useDictionaryStore } from '../../stores/dictionaryStore'
 import DictionaryCard from './DictionaryCard.vue'
 import DictionaryDownloader from './DictionaryDownloader.vue'
@@ -9,6 +9,7 @@ import DictionaryUploader from './DictionaryUploader.vue'
 
 const dictionaryStore = useDictionaryStore()
 const showDownloader = ref(false)
+const isMobile = computed(() => window.innerWidth < 768)
 
 async function clearDictionary() {
   await dictionaryStore.clearDictionary()
@@ -24,7 +25,7 @@ async function clearDictionary() {
       </p>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 sm:grid-cols-2">
       <!-- 导入字典 -->
       <DictionaryCard
         :icon="IconUpload"
@@ -73,7 +74,7 @@ async function clearDictionary() {
       title="字典下载管理"
       :footer="false"
       :mask-closable="true"
-      width="800px"
+      :width="isMobile ? '95%' : '800px'"
     >
       <DictionaryDownloader @close="showDownloader = false" />
     </a-modal>
