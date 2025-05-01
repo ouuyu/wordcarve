@@ -84,11 +84,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-2xl" @click="focusSearchInput">
+  <div class="max-w-2xl">
     <div class="flex flex-col items-start">
       <input
-        ref="searchInputRef" v-model="searchQuery" type="text" placeholder="Search..."
-        class="w-full border-b border-transparent bg-transparent text-left text-4xl outline-none focus:border-b-gray-200/50"
+        ref="searchInputRef"
+        v-model="searchQuery" type="text" placeholder="Search..." class="w-full border-b border-transparent bg-transparent text-left text-4xl outline-none focus:border-b-gray-200/50"
+        @click="focusSearchInput"
         @keyup.enter="searchWord"
       >
 
