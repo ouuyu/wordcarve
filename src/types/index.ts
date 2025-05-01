@@ -32,6 +32,13 @@ export interface DictionaryEntry {
   bnc?: number
   frq?: number
   exchange?: {
-    [key: string]: string
+    p?: string // 过去式（did）
+    d?: string // 过去分词（done）
+    i?: string // 现在分词（doing）
+    3?: string // 第三人称单数（does）
+    r?: string // 形容词比较级（-er）
+    t?: string // 形容词最高级（-est）
+    s?: string // 名词复数形式
+    [key: string]: string | undefined
   }
 }

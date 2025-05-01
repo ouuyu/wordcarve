@@ -84,24 +84,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="search-page min-h-screen w-full" @click="focusSearchInput">
-    <!-- 上端搜索区域 -->
-    <div class="flex flex-col items-start px-8 py-16 lg:px-24 md:px-16 sm:px-12">
+  <div class="max-w-2xl" @click="focusSearchInput">
+    <div class="flex flex-col items-start">
       <input
-        ref="searchInputRef" v-model="searchQuery" type="text" placeholder="输入单词..."
-        class="max-w-xl w-full border-b border-transparent bg-transparent text-left text-4xl font-light outline-none focus:border-b-gray-200/30"
-        :class="{ 'opacity-50': loading }" @keyup.enter="searchWord"
+        ref="searchInputRef" v-model="searchQuery" type="text" placeholder="Search..."
+        class="w-full border-b border-transparent bg-transparent text-left text-4xl outline-none focus:border-b-gray-200/50"
+        @keyup.enter="searchWord"
       >
-
-      <p v-if="!searchResult && !loading" class="mt-4 text-sm text-gray-400/50">
-        按回车键查询
-      </p>
 
       <div v-if="loading" class="mt-6">
         <a-spin dot />
       </div>
 
-      <!-- Recent searches as floating pills -->
       <div v-if="recentSearches.length && !searchResult" class="mt-6 max-w-xl w-full">
         <div class="flex flex-wrap gap-2">
           <a-tag
@@ -115,31 +109,19 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- 下端结果区域 -->
-    <div v-if="searchResult" class="mt-4 w-full flex justify-center px-8 lg:px-24 md:px-16 sm:px-12">
+    <div v-if="searchResult" class="mt-4 w-full flex py-4">
       <div class="max-w-3xl w-full">
         <WordDisplay :word="searchResult" class="border border-gray-100/20 rounded-lg bg-white/10 p-6 shadow-sm" />
-        <div class="mt-4 text-right">
-          <a-tag
-            class="cursor-pointer border-gray-200/20 bg-transparent px-4 py-2 text-sm"
-            @click="searchResult = null; focusSearchInput()"
-          >
-            返回搜索
-          </a-tag>
-        </div>
       </div>
     </div>
-
-    <!-- No dictionary loaded message -->
-    <a-empty
-      v-if="!dictionaryStore.dictionary.length" class="absolute left-0 right-0 top-1/2 -translate-y-1/2"
-      description="没有加载字典数据"
-    >
-      <template #image>
-        <IconBook class="text-6xl text-gray-300" />
-      </template>
-    </a-empty>
   </div>
-</template>
 
-<style scoped></style>
+  <a-empty
+    v-if="!dictionaryStore.dictionary.length" class="absolute left-0 right-0 top-1/2 -translate-y-1/2"
+    description="没有加载字典数据"
+  >
+    <template #image>
+      <IconBook class="text-6xl text-gray-300" />
+    </template>
+  </a-empty>
+</template>

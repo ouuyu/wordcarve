@@ -1,79 +1,167 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '../../types'
+import { ref } from 'vue'
 
 defineProps<{
   word: DictionaryEntry
 }>()
+
+// 定义导航项
+const navItems = [
+  { id: 'dictionary', label: '词典释义' },
+  { id: 'examples', label: '例句' },
+  { id: 'usage', label: '用法' },
+  { id: 'wiki', label: '百科' },
+]
+
+// 当前活动的导航项
+const activeNav = ref('dictionary')
+
+// 切换导航项
+function setActiveNav(navId: string) {
+  activeNav.value = navId
+}
+
+// 标签映射
+const tagMapping: Record<string, string> = {
+  zk: '中考',
+  gk: '高考',
+  cet4: '四级',
+  cet6: '六级',
+  ky: '考研',
+  toefl: '托福',
+  ielts: '雅思',
+  gre: 'GRE',
+}
+
+// 获取标签显示文本
+function getTagDisplay(tag: string): string {
+  return tagMapping[tag] || tag
+}
 </script>
 
 <template>
   <div class="w-full flex flex-col items-start">
-    <a-card bordered class="word-display-card max-w-2xl w-full p-4" style="margin-left:0;">
-      <template #title>
-        <div class="flex items-center gap-3">
-          <span class="text-xl font-bold">{{ word.word }}</span>
-          <span v-if="word.phonetic" class="text-gray-500">/{{ word.phonetic }}/</span>
+    <div class="w-full flex flex-col gap-4 md:flex-row">
+      <!-- 左侧导航栏 -->
+      <div class="w-full flex flex-col gap-2 md:w-48">
+        <div
+          v-for="item in navItems"
+          :key="item.id"
+          class="cursor-pointer rounded px-2 py-1 transition-colors"
+          :class="activeNav === item.id ? 'text-arcoblue-6 bg-arcoblue-1 font-medium' : 'text-gray-500 hover:text-arcoblue-6 hover:bg-arcoblue-1/50'"
+          @click="setActiveNav(item.id)"
+        >
+          {{ item.label }}
         </div>
-      </template>
-      <a-tabs type="line" class="mt-2">
-        <a-tab-pane key="definition" title="释义">
-          <ul class="list-disc pl-6">
-            <li v-for="(def, index) in word.definition" :key="index" class="mb-1">
-              {{ def }}
-            </li>
-          </ul>
-        </a-tab-pane>
-        <a-tab-pane v-if="Object.keys(word.pos || {}).length" key="pos" title="词性">
-          <div class="flex flex-wrap gap-2">
-            <a-tag v-for="(count, pos) in word.pos" :key="pos">
-              {{ pos }} ({{ count }})
-            </a-tag>
+      </div>
+
+      <div class="flex-1">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <h1 class="text-3xl font-bold">
+              {{ word.word }}
+            </h1>
+            <div class="flex items-center gap-2">
+              <span class="text-gray-600">/{{ word.phonetic }}/</span>
+            </div>
           </div>
-        </a-tab-pane>
-        <a-tab-pane v-if="word.translation && word.translation.length" key="translation" title="翻译">
-          <div>
-            <p v-for="(trans, index) in word.translation" :key="index" class="mb-1">
+        </div>
+
+        <div class="mb-6 flex flex-wrap gap-2">
+          <span
+            v-for="tag in word.tag || []"
+            :key="tag"
+            class="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600"
+          >
+            {{ getTagDisplay(tag) }}
+          </span>
+          <span v-if="word.collins" class="rounded-full bg-arcoblue-2 px-3 py-1 text-sm text-arcoblue-7">
+            柯林斯 {{ word.collins }}星
+          </span>
+        </div>
+
+        <!-- 内容区域 - 根据当前选中的导航项显示不同内容 -->
+        <div v-if="activeNav === 'dictionary'">
+          <!-- 直接显示所有翻译 -->
+          <div class="mb-6">
+            <div v-for="(trans, index) in word.translation" :key="index" class="mb-2 text-gray-700">
               {{ trans }}
+            </div>
+          </div>
+
+          <!-- 词形变化 -->
+          <div v-if="word.exchange" class="mb-6">
+            <div class="mb-2 text-gray-500">
+              词形变化
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div v-if="word.exchange.s" class="font-medium">
+                <span class="text-sm text-gray-500">复数: </span>
+                {{ word.exchange.s }}
+              </div>
+              <div v-if="word.exchange.p" class="font-medium">
+                <span class="text-sm text-gray-500">过去式: </span>
+                {{ word.exchange.p }}
+              </div>
+              <div v-if="word.exchange.d" class="font-medium">
+                <span class="text-sm text-gray-500">过去分词: </span>
+                {{ word.exchange.d }}
+              </div>
+              <div v-if="word.exchange.i" class="font-medium">
+                <span class="text-sm text-gray-500">现在分词: </span>
+                {{ word.exchange.i }}
+              </div>
+              <div v-if="word.exchange['3']" class="font-medium">
+                <span class="text-sm text-gray-500">第三人称单数: </span>
+                {{ word.exchange['3'] }}
+              </div>
+              <div v-if="word.exchange.r" class="font-medium">
+                <span class="text-sm text-gray-500">比较级: </span>
+                {{ word.exchange.r }}
+              </div>
+              <div v-if="word.exchange.t" class="font-medium">
+                <span class="text-sm text-gray-500">最高级: </span>
+                {{ word.exchange.t }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="activeNav === 'examples'">
+          <!-- 例句内容 -->
+          <div class="text-gray-700">
+            <p class="mb-4 text-gray-500">
+              暂无例句数据
             </p>
           </div>
-        </a-tab-pane>
-        <a-tab-pane v-if="word.exchange || word.tag || word.bnc || word.frq" key="more" title="更多信息">
-          <div v-if="word.exchange" class="mb-2">
-            <h3 class="text-md mb-1 font-bold">
-              词形变化:
-            </h3>
-            <div class="grid grid-cols-2 gap-2">
-              <div v-for="(form, type) in word.exchange" :key="type" class="flex items-center">
-                <span class="w-20 text-gray-500">{{ type }}:</span>
-                <span>{{ form }}</span>
-              </div>
-            </div>
+        </div>
+
+        <div v-else-if="activeNav === 'usage'">
+          <!-- 用法内容 -->
+          <div class="text-gray-700">
+            <p class="mb-4 text-gray-500">
+              暂无用法数据
+            </p>
           </div>
-          <div v-if="word.tag && word.tag.length" class="mb-2">
-            <h3 class="text-md mb-1 font-bold">
-              标签:
-            </h3>
-            <div class="flex flex-wrap gap-2">
-              <a-tag v-for="tag in word.tag" :key="tag">
-                {{ tag }}
-              </a-tag>
-            </div>
+        </div>
+
+        <div v-else-if="activeNav === 'wiki'">
+          <!-- 百科内容 -->
+          <div class="text-gray-700">
+            <p class="mb-4 text-gray-500">
+              暂无百科数据
+            </p>
           </div>
-          <div v-if="word.bnc || word.frq">
-            <h3 class="text-md mb-1 font-bold">
-              频率信息:
-            </h3>
-            <div class="flex gap-4">
-              <div v-if="word.bnc" class="text-sm">
-                BNC排名: <span class="font-semibold">{{ word.bnc }}</span>
-              </div>
-              <div v-if="word.frq" class="text-sm">
-                FRQ排名: <span class="font-semibold">{{ word.frq }}</span>
-              </div>
-            </div>
-          </div>
-        </a-tab-pane>
-      </a-tabs>
-    </a-card>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.word-display-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+}
+</style>
