@@ -2,7 +2,7 @@
 import type { DictionaryEntry } from '../types'
 import { Message } from '@arco-design/web-vue'
 import { IconBook } from '@arco-design/web-vue/es/icon'
-import { nextTick, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import WordDisplay from '../components/dictionary/WordDisplay.vue'
 import { useDictionaryStore } from '../stores/dictionaryStore'
 
@@ -21,23 +21,14 @@ async function searchWord() {
 
   loading.value = true
   try {
-    // Search for the word in the store
     searchResult.value = dictionaryStore.searchWord(searchQuery.value.trim())
 
-    // Add to recent searches if found
     if (searchResult.value) {
       if (!recentSearches.value.includes(searchQuery.value.trim())) {
         recentSearches.value.unshift(searchQuery.value.trim())
-        // Keep only the last 10 searches
         recentSearches.value = recentSearches.value.slice(0, 10)
-        // Save to localStorage
         localStorage.setItem('recent-searches', JSON.stringify(recentSearches.value))
       }
-      // Clear input after successful search
-      nextTick(() => {
-        searchQuery.value = ''
-        focusSearchInput()
-      })
     }
     else {
       Message.info('没有找到该单词')
@@ -62,12 +53,10 @@ function focusSearchInput() {
 }
 
 onMounted(() => {
-  // Load the dictionary
   if (!dictionaryStore.dictionary.length) {
     dictionaryStore.loadDictionary()
   }
 
-  // Load recent searches from localStorage
   try {
     const saved = localStorage.getItem('recent-searches')
     if (saved) {
@@ -78,7 +67,6 @@ onMounted(() => {
     console.error('Failed to load recent searches:', error)
   }
 
-  // Focus the search input on page load
   focusSearchInput()
 })
 </script>
