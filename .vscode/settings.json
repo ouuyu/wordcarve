@@ -8,8 +8,5 @@
     "javascript",
     "typescript",
     "vue"
-  ],
-  "[vue]": {
-    "editor.defaultFormatter": "Vue.volar"
-  }
+  ]
 }
