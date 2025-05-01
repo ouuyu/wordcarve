@@ -1,6 +1,6 @@
 export enum PronunciationType {
-  US = 0,  // 美式发音
-  UK = 1   // 英式发音
+  US = 0, // 美式发音
+  UK = 1, // 英式发音
 }
 
 /**
@@ -10,7 +10,7 @@ export enum PronunciationType {
  * @returns 发音音频URL
  */
 export function getYoudaoPronunciationUrl(word: string, type: PronunciationType = PronunciationType.US): string {
-  return `http://dict.youdao.com/dictvoice?type=${type}&audio=${encodeURIComponent(word)}`
+  return `https://dict.youdao.com/dictvoice?type=${type}&audio=${encodeURIComponent(word)}`
 }
 
 /**
@@ -22,7 +22,8 @@ export async function playWordPronunciation(word: string, type: PronunciationTyp
   try {
     const audio = new Audio(getYoudaoPronunciationUrl(word, type))
     await audio.play()
-  } catch (error) {
+  }
+  catch (error) {
     console.error('播放发音失败:', error)
     throw new Error('播放发音失败')
   }
