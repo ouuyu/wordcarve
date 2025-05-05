@@ -47,7 +47,9 @@ onMounted(async () => {
 
     <!-- 主区域 -->
     <main class="mx-auto max-w-1200px w-full flex-1 p-8">
-      <router-view />
+      <transition name="slide">
+        <router-view />
+      </transition>
     </main>
 
     <!-- 底栏 -->
@@ -65,3 +67,21 @@ onMounted(async () => {
     </footer>
   </div>
 </template>
+
+<style scoped>
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.35s ease-out;
+  position: relative;
+}
+
+.slide-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.slide-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+</style>

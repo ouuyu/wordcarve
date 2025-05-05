@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '../types'
+import WordDisplay from '@/components/dictionary/WordDisplay.vue'
+import { useDictionaryStore } from '@/stores/dictionaryStore'
 import { Message } from '@arco-design/web-vue'
 import { IconBook } from '@arco-design/web-vue/es/icon'
-import { onMounted, ref } from 'vue'
-import WordDisplay from '../components/dictionary/WordDisplay.vue'
-import { useDictionaryStore } from '../stores/dictionaryStore'
+import { onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const searchQuery = ref('')
 const loading = ref(false)
@@ -12,6 +13,8 @@ const dictionaryStore = useDictionaryStore()
 const searchResult = ref<DictionaryEntry | null>(null)
 const recentSearches = ref<string[]>([])
 const searchInputRef = ref<HTMLInputElement | null>(null)
+const route = useRoute()
+const router = useRouter()
 
 async function searchWord() {
   if (!searchQuery.value.trim()) {
@@ -29,6 +32,8 @@ async function searchWord() {
         recentSearches.value = recentSearches.value.slice(0, 10)
         localStorage.setItem('recent-searches', JSON.stringify(recentSearches.value))
       }
+
+      updateUrlQuery(searchQuery.value.trim())
     }
     else {
       Message.info('没有找到该单词')
@@ -52,6 +57,29 @@ function focusSearchInput() {
   searchInputRef.value?.focus()
 }
 
+function updateUrlQuery(query: string) {
+  router.push({
+    query: { q: query },
+  })
+}
+
+function searchFromUrlQuery() {
+  const queryParam = route.query.q
+  if (queryParam && typeof queryParam === 'string') {
+    searchQuery.value = queryParam
+    searchWord()
+  }
+}
+watch(
+  () => route.query.q,
+  (newQuery) => {
+    if (newQuery && typeof newQuery === 'string' && newQuery !== searchQuery.value) {
+      searchQuery.value = newQuery
+      searchWord()
+    }
+  },
+)
+
 onMounted(() => {
   if (!dictionaryStore.dictionary.length) {
     dictionaryStore.loadDictionary()
@@ -67,7 +95,11 @@ onMounted(() => {
     console.error('Failed to load recent searches:', error)
   }
 
-  focusSearchInput()
+  searchFromUrlQuery()
+
+  if (!route.query.q) {
+    focusSearchInput()
+  }
 })
 </script>
 
@@ -76,7 +108,7 @@ onMounted(() => {
     <div class="flex flex-col items-start">
       <input
         ref="searchInputRef"
-        v-model="searchQuery" type="text" placeholder="Search..." class="w-full border-b border-transparent bg-transparent text-left text-4xl outline-none focus:border-b-gray-200/50"
+        v-model="searchQuery" type="text" class="w-full border-b border-transparent bg-transparent text-left text-4xl outline-none focus:border-b-gray-200/50"
         @click="focusSearchInput"
         @keyup.enter="searchWord"
       >
