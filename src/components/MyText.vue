@@ -11,7 +11,6 @@ const instanceId = Math.random().toString(36).substr(2, 9)
 
 const dictionaryStore = useDictionaryStore()
 const componentRoot = ref<HTMLDivElement | null>(null)
-
 const rawText = ref(props.text)
 
 // State for popover (word definition)
@@ -34,7 +33,7 @@ function resetPopoverState() {
   popoverState.clickedWordIndex = null
 }
 
-// Global event name for closing popovers
+// Global event name for closing popovers from other MyText instances
 const CLOSE_POPOVERS_EVENT = 'close-popovers'
 
 // When another MyText instance opens its popover, close this popover if it's open.
@@ -51,12 +50,22 @@ function dispatchClosePopovers() {
   )
 }
 
-// Listen to global close event
+// Global click handler to close the popover when clicking outside of the component.
+function handleGlobalClick(event: MouseEvent) {
+  // If the click target is not inside the componentRoot, close the popover.
+  if (componentRoot.value && !componentRoot.value.contains(event.target as Node)) {
+    resetPopoverState()
+  }
+}
+
+// Listen to global events
 onMounted(() => {
   window.addEventListener(CLOSE_POPOVERS_EVENT, handleClosePopovers as EventListener)
+  document.addEventListener('click', handleGlobalClick)
 })
 onUnmounted(() => {
   window.removeEventListener(CLOSE_POPOVERS_EVENT, handleClosePopovers as EventListener)
+  document.removeEventListener('click', handleGlobalClick)
   resetPopoverState()
 })
 
@@ -81,7 +90,6 @@ async function handleWordClick(event: MouseEvent, word: string, index: number) {
       resetPopoverState()
     return
   }
-
   // Before opening a popover, dispatch an event to close any open popovers in other MyText instances.
   dispatchClosePopovers()
 
@@ -120,18 +128,13 @@ async function handleWordClick(event: MouseEvent, word: string, index: number) {
 
 function handleMouseUp(event: MouseEvent) {
   const targetElement = event.target as HTMLElement
-
-  if (targetElement.closest('.arco-dropdown')) {
+  if (targetElement.closest('.arco-dropdown'))
     return
-  }
-
   const selection = window.getSelection()
   const text = selection?.toString().trim() ?? ''
-
   if (text && text.length > 0) {
     if (popoverState.visible)
       resetPopoverState()
-    // Context menu logic can be added similarly if needed
   }
 }
 
@@ -171,7 +174,6 @@ watch(rawText, (newText) => {
         <span v-else>{{ word }}</span>
       </template>
     </template>
-
     <MyPopover
       :visible="popoverState.visible"
       :target="popoverState.targetElement"
