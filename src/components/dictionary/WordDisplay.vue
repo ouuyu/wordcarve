@@ -1,12 +1,27 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '../../types'
 import { Message } from '@arco-design/web-vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { playWordPronunciation, PronunciationType } from '../../utils/audio'
 
 const props = defineProps<{
   word: DictionaryEntry
+  mode?: 'normal' | 'mini'
+  clickable?: boolean
+  animationState?: 'entering' | 'leaving' | null
 }>()
+
+const emit = defineEmits<{
+  (e: 'click', word: DictionaryEntry): void
+  (e: 'toggle-mode'): void
+  (e: 'animation-complete'): void
+}>()
+
+// 设置默认值
+const displayMode = ref(props.mode || 'normal')
+
+// 计算是否为迷你模式
+const isMiniMode = computed(() => displayMode.value === 'mini')
 
 // 导航项
 const navItems = [
@@ -50,10 +65,70 @@ async function playPronunciation(type: PronunciationType) {
     Message.error('播放发音失败')
   }
 }
+
+// 处理点击事件
+function handleClick() {
+  if (props.clickable) {
+    emit('click', props.word)
+  }
+}
+
+// 切换显示模式
+function toggleMode() {
+  emit('toggle-mode')
+}
+
+// 获取简短释义（用于mini模式）
+const shortTranslation = computed(() => {
+  if (props.word.translation && props.word.translation.length > 0) {
+    return props.word.translation[0].length > 30
+      ? `${props.word.translation[0].substring(0, 30)}...`
+      : props.word.translation[0]
+  }
+  return ''
+})
+
+// 动画完成处理
+function onAnimationEnd() {
+  if (props.animationState) {
+    emit('animation-complete')
+  }
+}
 </script>
 
 <template>
-  <div class="w-full flex flex-col items-start md:flex-row">
+  <!-- Mini 模式 - 长条形式 -->
+  <div
+    v-if="isMiniMode"
+    class="word-display-mini w-full flex items-center gap-3 rounded-md bg-gray-50 px-4 py-2 transition-all hover:bg-gray-100"
+    :class="{
+      'cursor-pointer': clickable,
+      'animation-mini-enter': animationState === 'entering',
+    }"
+    @click="handleClick"
+    @animationend="onAnimationEnd"
+  >
+    <div class="min-w-[100px] text-gray-800 font-medium">
+      {{ word.word }}
+    </div>
+    <div class="text-sm text-gray-500">
+      /{{ word.phonetic }}/
+    </div>
+    <div class="flex-1 truncate text-sm text-gray-600">
+      {{ shortTranslation }}
+    </div>
+  </div>
+
+  <!-- Normal 模式 -->
+  <div
+    v-else
+    class="w-full flex flex-col items-start md:flex-row"
+    :class="{
+      'animation-normal-enter': animationState === 'entering',
+      'animation-normal-leave': animationState === 'leaving',
+    }"
+    @animationend="onAnimationEnd"
+  >
     <!-- PC端左侧导航栏 -->
     <div class="sticky top-4 hidden w-48 flex-col gap-2 md:flex">
       <div
@@ -200,5 +275,62 @@ async function playPronunciation(type: PronunciationType) {
 }
 .word-display-card {
   backdrop-filter: blur(10px);
+}
+
+/* 基础动画设置 */
+.word-display-mini {
+  transform-origin: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mini模式的进入动画 - 平滑滑入 */
+@keyframes miniEnter {
+  0% {
+    transform: translateY(-15px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animation-mini-enter {
+  animation: miniEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Normal模式的进入动画 - 缩放并淡入 */
+@keyframes normalEnter {
+  0% {
+    transform: translateY(-20px) scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.animation-normal-enter {
+  animation: normalEnter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animation-normal-leave {
+  animation: normalLeave 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes normalLeave {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+}
+
+.animation-normal-leave {
+  animation: normalLeave 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 </style>

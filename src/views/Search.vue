@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DictionaryEntry } from '../types'
+import type { DictionaryEntry } from '@/types'
 import WordDisplay from '@/components/dictionary/WordDisplay.vue'
 import { useDictionaryStore } from '@/stores/dictionaryStore'
 import { Message } from '@arco-design/web-vue'
@@ -11,10 +11,14 @@ const searchQuery = ref('')
 const loading = ref(false)
 const dictionaryStore = useDictionaryStore()
 const searchResult = ref<DictionaryEntry | null>(null)
-const recentSearches = ref<string[]>([])
+const previousResult = ref<DictionaryEntry | null>(null)
+const recentSearches = ref<DictionaryEntry[]>([])
 const searchInputRef = ref<HTMLInputElement | null>(null)
-const route = useRoute()
-const router = useRouter()
+
+// 动画状态
+const currentCardState = ref<'entering' | 'leaving' | null>(null)
+const newCardState = ref<'entering' | 'leaving' | null>(null)
+const isAnimating = ref(false)
 
 async function searchWord() {
   if (!searchQuery.value.trim()) {
@@ -24,15 +28,32 @@ async function searchWord() {
 
   loading.value = true
   try {
-    searchResult.value = dictionaryStore.searchWord(searchQuery.value.trim())
+    const result = dictionaryStore.searchWord(searchQuery.value.trim())
 
-    if (searchResult.value) {
-      if (!recentSearches.value.includes(searchQuery.value.trim())) {
-        recentSearches.value.unshift(searchQuery.value.trim())
-        recentSearches.value = recentSearches.value.slice(0, 10)
-        localStorage.setItem('recent-searches', JSON.stringify(recentSearches.value))
+    // 如果有新的搜索结果，且与当前结果不同，则触发动画
+    if (result && searchResult.value && result.word !== searchResult.value.word) {
+      isAnimating.value = true
+
+      // 当前卡片开始离开动画
+      currentCardState.value = 'leaving'
+
+      // 保存当前结果为上一个结果
+      previousResult.value = searchResult.value
+
+      // 设置新结果
+      searchResult.value = result
+    }
+    else {
+      // 首次搜索或相同单词，直接显示结果
+      searchResult.value = result
+
+      if (result) {
+        // 添加到历史记录
+        addToRecentSearches(result)
       }
+    }
 
+    if (result) {
       updateUrlQuery(searchQuery.value.trim())
     }
     else {
@@ -48,59 +69,42 @@ async function searchWord() {
   }
 }
 
-function handleRecentSearch(word: string) {
-  searchQuery.value = word
-  searchWord()
+// 当前卡片动画完成
+function onCurrentCardAnimationComplete() {
+  currentCardState.value = null
+
+  // 当前卡片离开动画完成后，开始新卡片的进入动画
+  if (previousResult.value) {
+    // 将上一个结果添加到历史记录
+    addToRecentSearches(previousResult.value)
+    previousResult.value = null
+  }
+
+  // 开始新卡片的进入动画
+  newCardState.value = 'entering'
 }
 
-function focusSearchInput() {
-  searchInputRef.value?.focus()
+// 新卡片动画完成
+function onNewCardAnimationComplete() {
+  newCardState.value = null
+  isAnimating.value = false
 }
 
-function updateUrlQuery(query: string) {
-  router.push({
-    query: { q: query },
-  })
-}
+// 添加到历史记录
+function addToRecentSearches(word: DictionaryEntry) {
+  const wordExists = recentSearches.value.some(item => item.word === word.word)
+  if (!wordExists) {
+    // 为新添加的历史记录项设置动画状态
+    recentSearches.value.unshift({ ...word })
+    recentSearches.value = recentSearches.value.slice(0, 10)
 
-function searchFromUrlQuery() {
-  const queryParam = route.query.q
-  if (queryParam && typeof queryParam === 'string') {
-    searchQuery.value = queryParam
-    searchWord()
+    // 保存历史记录
+    const wordList = recentSearches.value.map(item => item.word)
+    localStorage.setItem('recent-searches', JSON.stringify(wordList))
   }
 }
-watch(
-  () => route.query.q,
-  (newQuery) => {
-    if (newQuery && typeof newQuery === 'string' && newQuery !== searchQuery.value) {
-      searchQuery.value = newQuery
-      searchWord()
-    }
-  },
-)
 
-onMounted(() => {
-  if (!dictionaryStore.dictionary.length) {
-    dictionaryStore.loadDictionary()
-  }
-
-  try {
-    const saved = localStorage.getItem('recent-searches')
-    if (saved) {
-      recentSearches.value = JSON.parse(saved)
-    }
-  }
-  catch (error) {
-    console.error('Failed to load recent searches:', error)
-  }
-
-  searchFromUrlQuery()
-
-  if (!route.query.q) {
-    focusSearchInput()
-  }
-})
+// ... existing code ...
 </script>
 
 <template>
@@ -108,7 +112,8 @@ onMounted(() => {
     <div class="flex flex-col items-start">
       <input
         ref="searchInputRef"
-        v-model="searchQuery" type="text" class="w-full border-b border-transparent bg-transparent text-left text-4xl outline-none focus:border-b-gray-200/50"
+        v-model="searchQuery" type="text" class="w-full border border-gray-300 rounded-full bg-stone-100 px-6 py-3 text-lg text-gray-900 outline-none focus:border-gray-500 placeholder-gray-400"
+        placeholder="搜索单词..."
         @click="focusSearchInput"
         @keyup.enter="searchWord"
       >
@@ -117,22 +122,48 @@ onMounted(() => {
         <a-spin dot />
       </div>
 
-      <div v-if="recentSearches.length && !searchResult" class="mt-6 max-w-xl w-full">
-        <div class="flex flex-wrap gap-2">
-          <a-tag
-            v-for="word in recentSearches" :key="word" size="medium" bordered
-            class="cursor-pointer border-gray-200/30 bg-transparent px-3 py-1 hover:border-gray-300/50"
-            @click="handleRecentSearch(word)"
-          >
-            {{ word }}
-          </a-tag>
+      <!-- 搜索结果 -->
+      <div class="relative mt-4 min-h-[200px] w-full py-4">
+        <!-- 当前结果 -->
+        <div v-if="searchResult" class="max-w-3xl w-full">
+          <WordDisplay
+            :word="searchResult"
+            mode="normal"
+            :animation-state="newCardState"
+            class="border border-gray-100/20 rounded-lg bg-white/10 p-6 shadow-sm"
+            @animation-complete="onNewCardAnimationComplete"
+          />
+        </div>
+
+        <!-- 上一个结果（动画中） -->
+        <div v-if="previousResult && currentCardState" class="absolute left-0 top-0 max-w-3xl w-full">
+          <WordDisplay
+            :word="previousResult"
+            mode="normal"
+            :animation-state="currentCardState"
+            class="border border-gray-100/20 rounded-lg bg-white/10 p-6 shadow-sm"
+            @animation-complete="onCurrentCardAnimationComplete"
+          />
         </div>
       </div>
-    </div>
 
-    <div v-if="searchResult" class="mt-4 w-full flex py-4">
-      <div class="max-w-3xl w-full">
-        <WordDisplay :word="searchResult" class="border border-gray-100/20 rounded-lg bg-white/10 p-6 shadow-sm" />
+      <!-- 历史记录 - 使用 mini 模式 -->
+      <div v-if="recentSearches.length" class="mt-6 w-full">
+        <h3 class="mb-3 text-lg text-gray-700 font-medium">
+          最近搜索
+        </h3>
+        <div class="flex flex-col gap-2">
+          <WordDisplay
+            v-for="(word, index) in recentSearches"
+            :key="word.word"
+            :word="word"
+            mode="mini"
+            clickable
+            :animation-state="index === 0 && isAnimating ? 'entering' : null"
+            class="transition-all hover:shadow-sm"
+            @click="handleRecentSearch(word)"
+          />
+        </div>
       </div>
     </div>
   </div>
