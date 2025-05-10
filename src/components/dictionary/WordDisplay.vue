@@ -140,7 +140,7 @@ const {
                     isMeaningSelected(groupIdx, selectedMeaning?.meaningIdx ?? -1)
                       && group.allExamples.length
                   "
-                  class="ml-10 mt-3 border-l-2 border-gray-200 pl-4"
+                  class="ml-9 mt-3 border-l-2 border-gray-200 pl-4"
                 >
                   <div
                     v-for="(exGroup, exIdx) in group.allExamples.filter(
@@ -152,10 +152,10 @@ const {
                     <div
                       v-for="(example, eIdx) in exGroup.examples"
                       :key="eIdx"
-                      class="mb-2 cursor-pointer border border-transparent rounded-md transition-all"
+                      class="transition-all"
                       @click.stop="handleExampleClick(example, $event)"
                     >
-                      <p class="mb-1 text-gray-700">
+                      <p class="text-gray-700">
                         {{ example.sentence }}
                       </p>
                       <p class="text-sm text-gray-500">
