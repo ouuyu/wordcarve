@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
+import MyText from '@/components/MyText.vue'
 import { useDictionaryEntry } from '@/composables/useDictionaryEntry'
 import { PronunciationType } from '@/utils/audio'
 
@@ -41,7 +42,7 @@ const {
         {{ word.word }}
       </div>
       <div class="text-sm text-gray-500">
-        /{{ word.phonetic }}/
+        {{ word.phonetic ? `/${word.phonetic}/` : '' }}
       </div>
       <div class="flex-1 truncate text-sm text-gray-600">
         {{ shortTranslation }}
@@ -51,19 +52,21 @@ const {
     <!-- Normal Mode -->
     <div
       v-else
-      class="w-full flex flex-col items-start rounded-lg p-4 transition-all"
+      class="w-full flex flex-col items-start rounded-lg p-2 transition-all"
       :class="{ 'cursor-pointer hover:bg-gray-50 active:bg-gray-100': clickable }"
       @click="clickable ? handleClick() : undefined"
     >
       <div class="w-full overflow-x-hidden">
-        <div class="mb-4 flex items-center justify-between">
-          <div class="flex flex-wrap items-center gap-4">
-            <h1 class="break-all text-3xl text-gray-800 font-bold">
+        <div class="flex items-center justify-between">
+          <div class="mb-2 flex flex-wrap items-center">
+            <span class="break-all text-3xl font-bold">
               {{ word.word }}
-            </h1>
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="text-gray-600">/{{ word.phonetic }}/</span>
-              <div class="flex gap-2">
+            </span>
+            <div class="flex flex-wrap items-center px-2">
+              <span class="text-gray-600">
+                {{ word.phonetic ? `/${word.phonetic}/` : '' }}
+              </span>
+              <div class="flex px-2">
                 <a-button
                   type="text"
                   size="mini"
@@ -83,7 +86,7 @@ const {
           </div>
         </div>
 
-        <div class="mb-6 flex flex-wrap gap-2">
+        <div class="mb-4 flex flex-wrap gap-2">
           <span
             v-for="tag in word.tag || []"
             :key="tag"
@@ -114,7 +117,7 @@ const {
           </div>
 
           <!-- Detailed Meanings -->
-          <div v-if="mergedMeanings.length" class="space-y-4">
+          <div v-if="mergedMeanings.length" class="space-y-1">
             <div v-for="(group, groupIdx) in mergedMeanings" :key="group.part_of_speech">
               <div class="flex items-start">
                 <span class="w-[2.5rem] flex py-1 text-gray-500">{{ group.part_of_speech }}</span>
@@ -140,7 +143,7 @@ const {
                     isMeaningSelected(groupIdx, selectedMeaning?.meaningIdx ?? -1)
                       && group.allExamples.length
                   "
-                  class="ml-9 mt-3 border-l-2 border-gray-200 pl-4"
+                  class="mb-2 ml-9 mt-1 border-l-2 border-gray-200 pl-4 transition-all"
                 >
                   <div
                     v-for="(exGroup, exIdx) in group.allExamples.filter(
@@ -155,9 +158,7 @@ const {
                       class="transition-all"
                       @click.stop="handleExampleClick(example, $event)"
                     >
-                      <p class="text-gray-700">
-                        {{ example.sentence }}
-                      </p>
+                      <MyText :text="example.sentence" />
                       <p class="text-sm text-gray-500">
                         {{ example.sentence_zh }}
                       </p>
