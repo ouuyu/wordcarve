@@ -41,4 +41,21 @@ export interface DictionaryEntry {
     s?: string // 名词复数形式
     [key: string]: string | undefined
   }
+  meanings?: {
+    part_of_speech: string
+    meaning: string
+    examples: {
+      sentence: string
+      sentence_zh: string
+    }[]
+  }[]
+  usages?: {
+    type: string
+    form: string
+    meaning: string
+    examples: {
+      sentence: string
+      sentence_zh: string
+    }[]
+  }[]
 }

@@ -23,7 +23,6 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-screen flex flex-col bg-arcoblue-1">
-    <!-- 顶栏 -->
     <header class="h-16 flex items-center justify-between bg-arcoblue-1 px-8 shadow-sm">
       <div class="flex items-center text-6 font-bold">
         词刻

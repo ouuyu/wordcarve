@@ -162,9 +162,9 @@ function handleRecentSearch(word: DictionaryEntry) {
   background-color: rgb(255 255 255 / 0.1);
   padding: 1rem;
   font-size: 1.125rem;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  box-shadow: 0 1px 1px 0 rgb(0 0 0 / 0.05);
   outline: none;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(2px);
   transition: all 0.3s ease;
 }
 

@@ -10,14 +10,14 @@ const isMobile = computed(() => window.innerWidth < 768)
 
 const predefinedUrls = [
   {
-    name: 'COCA 高频词',
-    url: 'https://cdn.jsdelivr.net/gh/wordcarve/oss@latest/frq-15k.min.json',
-    description: '基于 COCA 语料库的 13000+ 高频词',
+    name: '词刻词典 (10k)',
+    url: 'https://cdn.jsdelivr.net/gh/wordcarve/oss@latest/10k.min.json',
+    description: '基于语料库词频统计的 10000 高频词',
   },
   {
-    name: 'demo',
-    url: 'https://demo',
-    description: '基于 demo 语料库的 13000+ 高频词(精简版)',
+    name: '词刻词典 (25k)',
+    url: 'https://cdn.jsdelivr.net/gh/wordcarve/oss@latest/30k.min.json',
+    description: '基于语料库词频统计的 25000 高频词',
   },
 ]
 
