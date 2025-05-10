@@ -13,17 +13,13 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'click', word: DictionaryEntry): void
-  (e: 'toggle-mode'): void
-  (e: 'animation-complete'): void
+  (e: 'animationComplete'): void
 }>()
 
-// 设置默认值
 const displayMode = ref(props.mode || 'normal')
 
-// 计算是否为迷你模式
 const isMiniMode = computed(() => displayMode.value === 'mini')
 
-// 导航项
 const navItems = [
   { id: 'dictionary', label: '词典释义' },
   { id: 'examples', label: '例句' },
@@ -31,15 +27,12 @@ const navItems = [
   { id: 'wiki', label: '百科' },
 ]
 
-// 当前活动的导航项
 const activeNav = ref('dictionary')
 
-// 切换导航项
 function setActiveNav(navId: string) {
   activeNav.value = navId
 }
 
-// 标签映射
 const tagMapping: Record<string, string> = {
   zk: '中考',
   gk: '高考',
@@ -51,12 +44,10 @@ const tagMapping: Record<string, string> = {
   gre: 'GRE',
 }
 
-// 获取标签显示文本
 function getTagDisplay(tag: string): string {
   return tagMapping[tag] || tag
 }
 
-// 添加发音功能
 async function playPronunciation(type: PronunciationType) {
   try {
     await playWordPronunciation(props.word.word, type)
@@ -66,19 +57,12 @@ async function playPronunciation(type: PronunciationType) {
   }
 }
 
-// 处理点击事件
 function handleClick() {
   if (props.clickable) {
     emit('click', props.word)
   }
 }
 
-// 切换显示模式
-function toggleMode() {
-  emit('toggle-mode')
-}
-
-// 获取简短释义（用于mini模式）
 const shortTranslation = computed(() => {
   if (props.word.translation && props.word.translation.length > 0) {
     return props.word.translation[0].length > 30
@@ -88,10 +72,9 @@ const shortTranslation = computed(() => {
   return ''
 })
 
-// 动画完成处理
 function onAnimationEnd() {
   if (props.animationState) {
-    emit('animation-complete')
+    emit('animationComplete')
   }
 }
 </script>
@@ -277,13 +260,11 @@ function onAnimationEnd() {
   backdrop-filter: blur(10px);
 }
 
-/* 基础动画设置 */
 .word-display-mini {
   transform-origin: center;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Mini模式的进入动画 - 平滑滑入 */
 @keyframes miniEnter {
   0% {
     transform: translateY(-15px);
@@ -299,38 +280,44 @@ function onAnimationEnd() {
   animation: miniEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* Normal模式的进入动画 - 缩放并淡入 */
-@keyframes normalEnter {
+/* 卡片翻转动画优化 */
+@keyframes flipOut {
   0% {
-    transform: translateY(-20px) scale(0.95);
-    opacity: 0;
+    transform: perspective(2000px) rotateY(0deg) translateZ(0);
+    opacity: 1;
+    filter: brightness(1);
   }
   100% {
-    transform: translateY(0) scale(1);
+    transform: perspective(2000px) rotateY(-30deg) translateZ(-100px);
+    opacity: 0;
+    filter: brightness(0.9);
+  }
+}
+
+@keyframes flipIn {
+  0% {
+    transform: perspective(2000px) rotateY(30deg) translateZ(-100px);
+    opacity: 0;
+    filter: brightness(0.9);
+  }
+  100% {
+    transform: perspective(2000px) rotateY(0deg) translateZ(0);
     opacity: 1;
+    filter: brightness(1);
   }
 }
 
 .animation-normal-enter {
-  animation: normalEnter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: flipIn 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  transform-origin: center;
 }
 
 .animation-normal-leave {
-  animation: normalLeave 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes normalLeave {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(30px);
-    opacity: 0;
-  }
-}
-
-.animation-normal-leave {
-  animation: normalLeave 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: flipOut 0.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  transform-origin: center;
 }
 </style>
