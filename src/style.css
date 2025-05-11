@@ -4,6 +4,30 @@
   box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c9ad8a;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a87c4f;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c9ad8a transparent;
+}
+
 body {
   font-family: 'Merriweather', 'Microsoft YaHei', 'PingFang SC', serif;
   line-height: 1.5;
