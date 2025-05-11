@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
-import MyPopover from '@/components/MyPopover.vue'
+import MyPopover from '@/components/my/MyPopover.vue'
 import { useDictionaryStore } from '@/stores/dictionaryStore'
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 
@@ -203,8 +203,8 @@ watch(rawText, (newText) => {
             </div>
           </div>
         </div>
-        <div v-else class="p-3 text-center text-gray-500">
-          未找到释义
+        <div v-else class="p-3 text-gray-600">
+          未找到该单词
         </div>
       </template>
     </MyPopover>
@@ -212,18 +212,25 @@ watch(rawText, (newText) => {
 </template>
 
 <style scoped>
+.my-text-component {
+  position: relative;
+}
+
 .word-token {
-  display: inline-block;
+  position: relative;
 }
 
-.word-definition {
-  max-height: 300px;
-  overflow-y: auto;
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-@media (max-width: 640px) {
-  .my-popover {
-    max-width: 95vw;
-  }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>

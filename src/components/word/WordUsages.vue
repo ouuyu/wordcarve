@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
-import MyText from '@/components/MyText.vue'
+import MyText from '@/components/my/MyText.vue'
 import { ref } from 'vue'
 
-const props = defineProps<{
+defineProps<{
   word: DictionaryEntry
 }>()
 

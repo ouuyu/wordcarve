@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
-import MyText from '@/components/MyText.vue'
+import MyText from '@/components/my/MyText.vue'
 
 interface MeaningGroup {
   part_of_speech: string

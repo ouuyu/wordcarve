@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 const props = defineProps({
   visible: {
@@ -18,7 +18,7 @@ const props = defineProps({
 })
 
 const italy = ref(false)
-
+const popoverRef = ref<HTMLElement | null>(null)
 const lastKnownStyle = ref<CSSProperties>({})
 
 watch(
@@ -44,12 +44,26 @@ watch(
 const computedStyle = computed<CSSProperties>(() => {
   return props.target ? lastKnownStyle.value : lastKnownStyle.value || {}
 })
+
+function handleClick(event: MouseEvent) {
+  if (popoverRef.value && popoverRef.value.contains(event.target as Node) && props.target && !props.target.contains(event.target as Node)) {
+    italy.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClick)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClick)
+})
 </script>
 
 <template>
   <Transition name="popover-slide">
     <Teleport v-if="visible && italy" to="body">
-      <div :style="computedStyle" class="my-popover">
+      <div ref="popoverRef" :style="computedStyle" class="my-popover">
         <div class="my-popover-content">
           <slot name="content" />
         </div>
