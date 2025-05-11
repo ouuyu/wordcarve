@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
+import FrequencyIndicator from '@/components/dictionary/FrequencyIndicator.vue'
 import MyText from '@/components/MyText.vue'
 import { useDictionaryEntry } from '@/composables/useDictionaryEntry'
 import { PronunciationType } from '@/utils/audio'
@@ -26,6 +27,8 @@ const {
   playPronunciation,
   handleClick,
   handleExampleClick,
+  wordForms,
+  frequencyLevel,
 } = useDictionaryEntry(props, emit)
 </script>
 
@@ -38,8 +41,9 @@ const {
       :class="{ 'cursor-pointer': clickable }"
       @click="handleClick"
     >
-      <div class="min-w-[100px] text-gray-800 font-medium">
+      <div class="min-w-[100px] flex items-center gap-1 text-gray-800 font-medium">
         {{ word.word }}
+        <FrequencyIndicator v-if="frequencyLevel > 0" :level="frequencyLevel" />
       </div>
       <div class="text-sm text-gray-500">
         {{ word.phonetic ? `/${word.phonetic}/` : '' }}
@@ -59,8 +63,9 @@ const {
       <div class="w-full overflow-x-hidden">
         <div class="flex items-center justify-between">
           <div class="mb-2 flex flex-wrap items-center">
-            <span class="break-all text-3xl font-bold">
+            <span class="flex items-center break-all text-3xl font-bold">
               {{ word.word }}
+              <FrequencyIndicator v-if="frequencyLevel > 0" :level="frequencyLevel" class="ml-2" />
             </span>
             <div class="flex flex-wrap items-center px-2">
               <span class="text-gray-600">
@@ -167,6 +172,15 @@ const {
                 </div>
               </transition>
             </div>
+          </div>
+        </div>
+
+        <!-- 词形变化 (放在最后) -->
+        <div v-if="wordForms.length > 0" class="mt-4 border-t border-gray-100 pt-3">
+          <div class="flex flex-wrap gap-2">
+            <span v-for="(form, index) in wordForms" :key="index" class="text-sm text-gray-600">
+              <span class="font-medium">{{ form.type }}:</span> {{ form.word }}
+            </span>
           </div>
         </div>
       </div>
