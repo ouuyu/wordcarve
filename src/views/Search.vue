@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
-import WordDisplay from '@/components/dictionary/WordDisplay.vue'
+import WordDisplay from '@/components/word/WordDisplay.vue'
 import { useDictionaryStore } from '@/stores/dictionaryStore'
 import { Message } from '@arco-design/web-vue'
 import { onMounted, ref } from 'vue'
