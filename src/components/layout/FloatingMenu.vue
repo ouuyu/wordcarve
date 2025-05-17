@@ -1,22 +1,44 @@
 <script setup lang="ts">
 import { IconHome, IconSearch, IconSettings } from '@arco-design/web-vue/es/icon'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
 const isHovered = ref(false)
+const isMobile = ref(false)
 
 const navItems = [
   { path: '/', label: '首页', icon: IconHome },
   { path: '/search', label: '搜索', icon: IconSearch },
   { path: '/settings', label: '设置', icon: IconSettings },
 ]
+
+function toggleMenu() {
+  if (isMobile.value) {
+    isHovered.value = !isHovered.value
+  }
+}
+
+function closeMenu(e: MouseEvent) {
+  if (isMobile.value && isHovered.value) {
+    const target = e.target as HTMLElement
+    if (!target.closest('.fixed.bottom-4.left-4')) {
+      isHovered.value = false
+    }
+  }
+}
+
+onMounted(() => {
+  isMobile.value = window.innerWidth <= 768
+  window.addEventListener('click', closeMenu)
+})
 </script>
 
 <template>
   <div
     class="fixed bottom-4 left-4 z-50"
-    @mouseenter="isHovered = true"
-    @mouseleave="isHovered = false"
+    @mouseenter="!isMobile && (isHovered = true)"
+    @mouseleave="!isMobile && (isHovered = false)"
+    @click="toggleMenu"
   >
     <div
       class="flex overflow-hidden bg-white shadow-lg transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
