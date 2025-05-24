@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
 
-const props = defineProps<{
+defineProps<{
   word: DictionaryEntry
   getTagDisplay: (tag: string) => string
 }>()
