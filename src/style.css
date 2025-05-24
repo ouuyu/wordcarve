@@ -28,8 +28,23 @@
   scrollbar-color: #c9ad8a transparent;
 }
 
-body {
-  font-family: 'Merriweather', 'Microsoft YaHei', 'PingFang SC', serif;
-  line-height: 1.5;
+@font-face {
+  font-family: 'Mixed-En';
+  src: local('Merriweather');
+  unicode-range: U+0000-007F, U+0080-00FF, U+0100-017F, U+0180-024F;
   font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Mixed-Cn';
+  src: local('Microsoft YaHei');
+  unicode-range: U+4E00-9FFF, U+3400-4DBF, U+F900-FAFF;
+  font-weight: 500;
+  font-display: swap;
+}
+
+body {
+  font-family: 'Mixed-En', 'Mixed-Cn', 'Merriweather', 'Microsoft YaHei', sans-serif;
+  line-height: 1.5;
 }

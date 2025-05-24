@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
 import WordDisplay from '@/components/word/WordDisplay.vue'
+import EmptyDictionaryGuide from '@/components/dictionary/EmptyDictionaryGuide.vue'
 import { useDictionaryStore } from '@/stores/dictionaryStore'
 import { Message } from '@/utils/message'
 import { Skeleton, SkeletonLine, Space } from '@/components/ui'
@@ -167,6 +168,9 @@ function handleRecentSearch(word: DictionaryEntry) {
           <div v-else class="i-carbon:search w-5 h-5"></div>
         </button>
       </div>
+      
+      <!-- 当词典为空时显示引导 -->
+      <EmptyDictionaryGuide v-if="!dbLoading && dictionaryStore.dictionary.length === 0" />
 
       <div class="relative mt-6 min-h-[200px] w-full">
         <!-- 数据库加载中骨架屏 -->

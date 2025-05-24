@@ -90,7 +90,6 @@ const iconClass = computed(() => {
   justify-content: center;
   border: none;
   border-radius: var(--border-radius-base);
-  font-weight: 500;
   cursor: pointer;
   transition: var(--transition-all);
   white-space: nowrap;
@@ -103,7 +102,6 @@ const iconClass = computed(() => {
 
 .custom-button:focus {
   outline: none;
-  ring: 2px var(--color-primary);
 }
 
 .custom-button:after {
