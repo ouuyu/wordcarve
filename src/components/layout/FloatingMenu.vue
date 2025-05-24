@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { IconHome, IconSearch, IconSettings } from '@arco-design/web-vue/es/icon'
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
@@ -7,9 +6,9 @@ const isHovered = ref(false)
 const isMobile = ref(false)
 
 const navItems = [
-  { path: '/', label: '首页', icon: IconHome },
-  { path: '/search', label: '搜索', icon: IconSearch },
-  { path: '/settings', label: '设置', icon: IconSettings },
+  { path: '/', label: '首页', icon: 'i-carbon:home' },
+  { path: '/search', label: '搜索', icon: 'i-carbon:search' },
+  { path: '/settings', label: '设置', icon: 'i-carbon:settings' },
 ]
 
 function toggleMenu() {
@@ -60,7 +59,7 @@ onMounted(() => {
                   :to="item.path"
                   class="flex items-center gap-2 rounded-full px-4 py-2 text-gray-700 no-underline hover:bg-gray-100"
                 >
-                  <component :is="item.icon" class="text-lg" />
+                  <span :class="[item.icon, 'w-5 h-5']"></span>
                   <span class="text-sm">{{ item.label }}</span>
                 </RouterLink>
               </li>
@@ -77,11 +76,13 @@ onMounted(() => {
 .fade-swap-leave-active {
   transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
 .fade-swap-enter-from,
 .fade-swap-leave-to {
   opacity: 0;
   transform: scale(0.9);
 }
+
 .fade-swap-enter-to,
 .fade-swap-leave-from {
   opacity: 1;

@@ -1,82 +1,97 @@
 <script setup lang="ts">
-import { Message } from '@arco-design/web-vue'
+import { Message } from '@/utils/message'
 import { ref } from 'vue'
 import { useDictionaryStore } from '../../stores/dictionaryStore'
+import { Button } from '@/components/ui'
 
 const dictionaryStore = useDictionaryStore()
 const uploading = ref(false)
+const fileInputRef = ref<HTMLInputElement | null>(null)
 
-async function handleFileUpload(options: any) {
-  uploading.value = true
-  const fileObj = options.file || (options.fileItem && options.fileItem.file)
+function triggerFileInput() {
+  if (fileInputRef.value) {
+    fileInputRef.value.click()
+  }
+}
 
-  if (!fileObj) {
-    console.error('No file found in upload options', options)
-    Message.error('无法获取上传文件，请重试')
-    options.onError && options.onError(new Error('无法获取上传文件'))
-    uploading.value = false
+async function handleFileUpload(event: Event) {
+  const inputElement = event.target as HTMLInputElement
+  const files = inputElement.files
+  
+  if (!files || files.length === 0) {
+    Message.error('请选择文件')
     return
   }
-
-  const reader = new FileReader()
-
-  reader.onload = async (e) => {
-    try {
-      if (e.target?.result) {
-        const result = e.target.result as string
-        const success = await dictionaryStore.importDictionary(result)
-
-        if (success) {
-          Message.success(`成功导入字典，共 ${dictionaryStore.dictionary.length} 个单词`)
-          options.onSuccess && options.onSuccess()
-        }
-        else {
-          console.error('Import failed: Invalid dictionary format')
-          Message.error('导入失败，字典格式不正确')
-          options.onError && options.onError(new Error('字典格式不正确'))
-        }
-      }
-    }
-    catch (error) {
-      console.error('Import error:', error)
-      Message.error('导入字典时出错')
-      options.onError && options.onError(error)
-    }
-    finally {
-      uploading.value = false
-    }
-  }
-
-  reader.onerror = (event) => {
-    console.error('FileReader error:', event)
-    Message.error('读取文件时出错')
-    uploading.value = false
-    options.onError && options.onError(new Error('读取文件时出错'))
-  }
+  
+  const fileObj = files[0]
+  uploading.value = true
 
   try {
-    reader.readAsText(fileObj)
-  }
-  catch (error) {
-    console.error('Error calling readAsText:', error)
-    Message.error('文件读取错误')
+    const text = await readFileAsText(fileObj)
+    const success = await dictionaryStore.importDictionary(text)
+
+    if (success) {
+      Message.success(`成功导入字典，共 ${dictionaryStore.dictionary.length} 个单词`)
+    } else {
+      console.error('Import failed: Invalid dictionary format')
+      Message.error('导入失败，字典格式不正确')
+    }
+  } catch (error) {
+    console.error('Import error:', error)
+    Message.error('导入字典时出错')
+  } finally {
     uploading.value = false
-    options.onError && options.onError(error)
+    // 重置文件输入，允许再次选择相同文件
+    if (fileInputRef.value) {
+      fileInputRef.value.value = ''
+    }
   }
+}
+
+function readFileAsText(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        resolve(e.target.result as string)
+      } else {
+        reject(new Error('读取文件结果为空'))
+      }
+    }
+    
+    reader.onerror = (event) => {
+      console.error('FileReader error:', event)
+      reject(new Error('读取文件时出错'))
+    }
+    
+    try {
+      reader.readAsText(file)
+    } catch (error) {
+      reject(error)
+    }
+  })
 }
 </script>
 
 <template>
-  <a-upload
-    action="/"
-    accept=".json"
-    :auto-upload="true"
-    :show-file-list="false"
-    :custom-request="handleFileUpload"
-    :loading="uploading"
-  >
-    <a-button type="outline" size="small">
+  <div>
+    <input
+      ref="fileInputRef"
+      type="file"
+      accept=".json"
+      class="hidden"
+      @change="handleFileUpload"
+    />
+    <Button 
+      type="outline" 
+      size="sm" 
+      :loading="uploading" 
+      :disabled="uploading"
+      @click="triggerFileInput"
+      icon="carbon:upload"
+    >
       选择文件
-    </a-button>
-  </a-upload>
+    </Button>
+  </div>
 </template>

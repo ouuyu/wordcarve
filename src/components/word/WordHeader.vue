@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
 import FrequencyIndicator from '@/components/dictionary/FrequencyIndicator.vue'
+import Button from '@/components/ui/Button.vue'
 import { PronunciationType } from '@/utils/audio'
 
 defineProps<{
@@ -30,20 +31,22 @@ function playPronunciation(type: PronunciationType, event: MouseEvent) {
           {{ word.phonetic ? `/${word.phonetic}/` : '' }}
         </span>
         <div class="flex px-2">
-          <a-button
+          <Button
             type="text"
-            size="mini"
+            size="xs"
+            icon="carbon:audio"
             @click="(e) => playPronunciation(PronunciationType.US, e)"
           >
             美
-          </a-button>
-          <a-button
+          </Button>
+          <Button
             type="text"
-            size="mini"
+            size="xs"
+            icon="carbon:audio"
             @click="(e) => playPronunciation(PronunciationType.UK, e)"
           >
             英
-          </a-button>
+          </Button>
         </div>
       </div>
     </div>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Message } from '@arco-design/web-vue'
-import { IconDownload } from '@arco-design/web-vue/es/icon'
+import { Message } from '@/utils/message'
 import { computed, reactive, ref } from 'vue'
 import { useDictionaryStore } from '../../stores/dictionaryStore'
+import { Button, Input, Modal } from '@/components/ui'
 
 const emit = defineEmits(['close'])
 const dictionaryStore = useDictionaryStore()
@@ -148,16 +148,15 @@ function cancelDownload() {
 <template>
   <div class="p-4">
     <!-- 下载进度模态框 -->
-    <a-modal
+    <Modal
       v-model:visible="downloadStatus.isDownloading"
       title="下载进度"
       :footer="false"
       :mask-closable="false"
       :width="isMobile ? '95%' : '500px'"
-      class="download-modal"
     >
       <div class="flex flex-col items-center justify-center p-6">
-        <a-spin :size="40" />
+        <div class="i-svg-spinners:270-ring-with-bg w-10 h-10 text-blue-500"></div>
         <div class="mt-4 text-center">
           <div class="mb-2 text-lg font-medium">
             正在下载: {{ downloadStatus.currentName }}
@@ -170,66 +169,67 @@ function cancelDownload() {
             }}
           </div>
         </div>
-        <a-button class="mt-4" status="danger" @click="cancelDownload">
+        <Button class="mt-4" type="danger" @click="cancelDownload">
           取消下载
-        </a-button>
+        </Button>
       </div>
-    </a-modal>
+    </Modal>
 
-    <a-alert v-if="downloadStatus.error" type="error" class="mb-4">
+    <div v-if="downloadStatus.error" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
       {{ downloadStatus.error }}
-    </a-alert>
+    </div>
 
-    <a-divider>预置词库</a-divider>
+    <div class="border-t border-gray-200 my-4 pt-4">
+      <h3 class="text-center mb-4 text-gray-600">预置词库</h3>
+    </div>
 
-    <a-row :gutter="[16, 16]" class="justify-center">
-      <a-col v-for="(dict, index) in predefinedUrls" :key="index" :span="24" :lg="12">
-        <a-card class="mb-4">
-          <template #title>
-            {{ dict.name }}
-          </template>
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div v-for="(dict, index) in predefinedUrls" :key="index" class="mb-4">
+        <div class="border rounded-md p-4 bg-white">
+          <h4 class="text-lg font-medium mb-2">{{ dict.name }}</h4>
           <p class="mb-2 text-sm text-gray-500">
             {{ dict.description }}
           </p>
           <div class="mb-3 break-all text-xs text-gray-400">
             {{ dict.url }}
           </div>
-          <a-button
+          <Button
             type="primary"
-            size="small"
+            size="sm"
             :disabled="downloadStatus.isDownloading"
             @click="downloadDictionary(dict.url, dict.name)"
+            icon="carbon:download"
           >
-            <template #icon>
-              <IconDownload />
-            </template>
             下载
-          </a-button>
-        </a-card>
-      </a-col>
-    </a-row>
+          </Button>
+        </div>
+      </div>
+    </div>
 
-    <a-divider>自定义URL</a-divider>
+    <div class="border-t border-gray-200 my-4 pt-4">
+      <h3 class="text-center mb-4 text-gray-600">自定义URL</h3>
+    </div>
 
-    <a-space direction="vertical" fill>
-      <a-input-group>
-        <a-input
+    <div class="flex flex-col space-y-4">
+      <div class="flex space-x-2">
+        <Input
           v-model="customUrl"
           placeholder="输入JSON词库URL"
           :disabled="downloadStatus.isDownloading"
+          class="flex-grow"
         />
-        <a-button
+        <Button
           type="primary"
           :disabled="!customUrl || downloadStatus.isDownloading"
           @click="downloadCustomUrl"
         >
           下载
-        </a-button>
-      </a-input-group>
+        </Button>
+      </div>
       <p class="text-xs text-gray-500">
         请确保URL指向有效的JSON词库文件, 格式需与系统兼容
       </p>
-    </a-space>
+    </div>
   </div>
 </template>
 

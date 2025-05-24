@@ -1,7 +1,6 @@
 import type { DictionaryEntry } from '@/types'
 import type { PronunciationType } from '@/utils/audio'
 import { playWordPronunciation } from '@/utils/audio'
-import { Message } from '@arco-design/web-vue'
 import { computed, ref } from 'vue'
 
 interface UseDictionaryEntryProps {
