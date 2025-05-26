@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import FloatingMenu from '@/components/layout/FloatingMenu.vue'
+import MyFloatingMenu from '@/components/my/MyFloatingMenu.vue'
 import { useDictionaryStore } from './stores/dictionaryStore'
 
 const dictionaryStore = useDictionaryStore()
@@ -8,9 +8,10 @@ const dictionaryStore = useDictionaryStore()
 onMounted(async () => {
   try {
     const result = await dictionaryStore.loadDictionary()
-    console.warn(`字典数据加载${result ? '成功' : '失败'}，共 ${dictionaryStore.dictionary.length} 个单词`)
-  }
-  catch (error) {
+    console.warn(
+      `字典数据加载${result ? '成功' : '失败'}，共 ${dictionaryStore.dictionary.length} 个单词`,
+    )
+  } catch (error) {
     console.error('加载字典数据失败:', error)
   }
 })
@@ -24,7 +25,7 @@ onMounted(async () => {
         <router-view />
       </transition>
     </main>
-    <FloatingMenu />
+    <MyFloatingMenu />
   </div>
 </template>
 

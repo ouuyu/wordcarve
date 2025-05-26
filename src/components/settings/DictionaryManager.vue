@@ -2,10 +2,10 @@
 import { computed, ref } from 'vue'
 import { Button, Modal } from '@/components/ui'
 import { Message } from '@/utils/message'
-import { useDictionaryStore } from '../../stores/dictionaryStore'
-import DictionaryCard from './DictionaryCard.vue'
-import DictionaryDownloader from './DictionaryDownloader.vue'
-import DictionaryUploader from './DictionaryUploader.vue'
+import { useDictionaryStore } from '@/stores/dictionaryStore'
+import DictionaryCard from '@/components/settings/DictionaryCard.vue'
+import DictionaryDownloader from '@/components/settings/DictionaryDownloader.vue'
+import DictionaryUploader from '@/components/settings/DictionaryUploader.vue'
 
 const dictionaryStore = useDictionaryStore()
 const showDownloader = ref(false)
@@ -22,9 +22,7 @@ async function clearDictionary() {
 <template>
   <div class="dictionary-manager">
     <div class="mb-6">
-      <p class="mb-2 text-gray-600">
-        当前词库: {{ dictionaryStore.dictionary.length }} 个单词
-      </p>
+      <p class="mb-2 text-gray-600">当前词库: {{ dictionaryStore.dictionary.length }} 个单词</p>
     </div>
 
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 sm:grid-cols-2">
@@ -43,7 +41,11 @@ async function clearDictionary() {
         title="下载字典"
         description="从网络下载预设词库"
       >
-        <Button type="outline" size="sm" @click="showDownloader = true">
+        <Button
+          type="outline"
+          size="sm"
+          @click="showDownloader = true"
+        >
           打开下载管理
         </Button>
       </DictionaryCard>

@@ -103,17 +103,14 @@ async function downloadDictionary(url: string, name: string) {
     if (success) {
       Message.success(`成功导入字典 "${name}"，共 ${dictionaryStore.dictionary.length} 个单词`)
       emit('close')
-    }
-    else {
+    } else {
       Message.error('导入失败，字典格式不正确')
     }
-  }
-  catch (error: any) {
+  } catch (error: any) {
     console.error('下载字典失败:', error)
     downloadStatus.error = error.message || '下载失败'
     Message.error(`下载失败: ${error.message || '未知错误'}`)
-  }
-  finally {
+  } finally {
     downloadStatus.isDownloading = false
   }
 }
@@ -121,11 +118,9 @@ async function downloadDictionary(url: string, name: string) {
 function formatSpeed(bytesPerSecond: number): string {
   if (bytesPerSecond < 1024) {
     return `${bytesPerSecond.toFixed(1)} B/s`
-  }
-  else if (bytesPerSecond < 1024 * 1024) {
+  } else if (bytesPerSecond < 1024 * 1024) {
     return `${(bytesPerSecond / 1024).toFixed(1)} KB/s`
-  }
-  else {
+  } else {
     return `${(bytesPerSecond / (1024 * 1024)).toFixed(1)} MB/s`
   }
 }
@@ -158,35 +153,38 @@ function cancelDownload() {
       <div class="flex flex-col items-center justify-center p-6">
         <div class="i-svg-spinners:270-ring-with-bg h-10 w-10 text-blue-500" />
         <div class="mt-4 text-center">
-          <div class="mb-2 text-lg font-medium">
-            正在下载: {{ downloadStatus.currentName }}
-          </div>
+          <div class="mb-2 text-lg font-medium">正在下载: {{ downloadStatus.currentName }}</div>
           <div class="text-md text-blue-500 font-medium">
-            {{
-              downloadStatus.isDownloading
-                ? `速度: ${downloadStatus.speed}`
-                : '/'
-            }}
+            {{ downloadStatus.isDownloading ? `速度: ${downloadStatus.speed}` : '/' }}
           </div>
         </div>
-        <Button class="mt-4" type="danger" @click="cancelDownload">
+        <Button
+          class="mt-4"
+          type="danger"
+          @click="cancelDownload"
+        >
           取消下载
         </Button>
       </div>
     </Modal>
 
-    <div v-if="downloadStatus.error" class="mb-4 border border-red-200 rounded bg-red-50 p-3 text-red-700">
+    <div
+      v-if="downloadStatus.error"
+      class="mb-4 border border-red-200 rounded bg-red-50 p-3 text-red-700"
+    >
       {{ downloadStatus.error }}
     </div>
 
     <div class="my-4 border-t border-gray-200 pt-4">
-      <h3 class="mb-4 text-center text-gray-600">
-        预置词库
-      </h3>
+      <h3 class="mb-4 text-center text-gray-600">预置词库</h3>
     </div>
 
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-      <div v-for="(dict, index) in predefinedUrls" :key="index" class="mb-4">
+      <div
+        v-for="(dict, index) in predefinedUrls"
+        :key="index"
+        class="mb-4"
+      >
         <div class="border rounded-md bg-white p-4">
           <h4 class="mb-2 text-lg font-medium">
             {{ dict.name }}
@@ -211,9 +209,7 @@ function cancelDownload() {
     </div>
 
     <div class="my-4 border-t border-gray-200 pt-4">
-      <h3 class="mb-4 text-center text-gray-600">
-        自定义URL
-      </h3>
+      <h3 class="mb-4 text-center text-gray-600">自定义URL</h3>
     </div>
 
     <div class="flex flex-col space-y-4">
@@ -232,9 +228,7 @@ function cancelDownload() {
           下载
         </Button>
       </div>
-      <p class="text-xs text-gray-500">
-        请确保URL指向有效的JSON词库文件, 格式需与系统兼容
-      </p>
+      <p class="text-xs text-gray-500">请确保URL指向有效的JSON词库文件, 格式需与系统兼容</p>
     </div>
   </div>
 </template>

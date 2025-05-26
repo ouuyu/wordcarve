@@ -7,6 +7,7 @@
   "bracketSpacing": true,
   "arrowParens": "avoid",
   "endOfLine": "lf",
-  "vueIndentScriptAndStyle": true,
-  "singleAttributePerLine": true
+  "vueIndentScriptAndStyle": false,
+  "singleAttributePerLine": true,
+  "vueScriptIndent": false
 }

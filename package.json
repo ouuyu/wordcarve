@@ -11,6 +11,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@prettier/plugin-xml": "^3.4.1",
     "@types/node": "^22.14.1",
     "@unocss/preset-attributify": "66.1.0-beta.12",
     "@vueuse/core": "^13.1.0",

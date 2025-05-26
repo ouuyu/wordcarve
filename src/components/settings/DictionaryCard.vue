@@ -16,9 +16,14 @@ defineProps({
 </script>
 
 <template>
-  <div class="flex flex-col items-center border border-gray-100 rounded-lg bg-gray-50/50 p-4 transition-all">
+  <div
+    class="flex flex-col items-center border border-gray-100 rounded-lg bg-gray-50/50 p-4 transition-all"
+  >
     <div class="mb-2 text-lg text-gray-700">
-      <span class="h-6 w-6" :class="[icon]" />
+      <span
+        class="h-6 w-6"
+        :class="[icon]"
+      />
     </div>
     <h3 class="mb-2 text-center font-medium">
       {{ title }}

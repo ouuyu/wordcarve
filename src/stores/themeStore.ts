@@ -58,10 +58,10 @@ const themeColors = {
 export const useThemeStore = defineStore('theme', () => {
   // 主题名称映射
   const themeNames: Record<ThemeType, string> = {
-    default: '默认棕色',
-    blue: '蓝色',
-    green: '绿色',
-    purple: '紫色',
+    default: '暖阳棕',
+    blue: '海天蓝',
+    green: '原野绿',
+    purple: '幻梦紫',
   }
 
   // 当前主题
@@ -103,9 +103,13 @@ export const useThemeStore = defineStore('theme', () => {
   }
 
   // 监听主题变化
-  watch(currentTheme, (newTheme) => {
-    applyTheme(newTheme)
-  }, { immediate: true })
+  watch(
+    currentTheme,
+    newTheme => {
+      applyTheme(newTheme)
+    },
+    { immediate: true },
+  )
 
   return {
     currentTheme,

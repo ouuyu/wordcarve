@@ -32,17 +32,14 @@ async function handleFileUpload(event: Event) {
 
     if (success) {
       Message.success(`成功导入字典，共 ${dictionaryStore.dictionary.length} 个单词`)
-    }
-    else {
+    } else {
       console.error('Import failed: Invalid dictionary format')
       Message.error('导入失败，字典格式不正确')
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Import error:', error)
     Message.error('导入字典时出错')
-  }
-  finally {
+  } finally {
     uploading.value = false
     // 重置文件输入，允许再次选择相同文件
     if (fileInputRef.value) {
@@ -55,24 +52,22 @@ function readFileAsText(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
 
-    reader.onload = (e) => {
+    reader.onload = e => {
       if (e.target?.result) {
         resolve(e.target.result as string)
-      }
-      else {
+      } else {
         reject(new Error('读取文件结果为空'))
       }
     }
 
-    reader.onerror = (event) => {
+    reader.onerror = event => {
       console.error('FileReader error:', event)
       reject(new Error('读取文件时出错'))
     }
 
     try {
       reader.readAsText(file)
-    }
-    catch (error) {
+    } catch (error) {
       reject(error)
     }
   })
@@ -87,7 +82,7 @@ function readFileAsText(file: File): Promise<string> {
       accept=".json"
       class="hidden"
       @change="handleFileUpload"
-    >
+    />
     <Button
       type="outline"
       size="sm"

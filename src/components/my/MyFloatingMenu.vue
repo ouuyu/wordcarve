@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import ThemeSwitcher from './ThemeSwitcher.vue'
 
 const isHovered = ref(false)
 const isMobile = ref(false)
@@ -42,14 +41,27 @@ onMounted(() => {
   >
     <div
       class="flex overflow-hidden bg-white shadow-lg transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
-      :class="isHovered ? 'w-36 h-auto p-2 rounded-lg' : 'w-14 h-14 rounded-lg'"
+      :class="isHovered ? 'w-36 h-36 p-2 rounded-lg' : 'w-14 h-14 rounded-lg'"
     >
-      <transition name="fade-swap" mode="out-in" :duration="{ enter: 300, leave: 200 }">
+      <transition
+        name="fade-swap"
+        mode="out-in"
+        :duration="{ enter: 300, leave: 200 }"
+      >
         <template v-if="!isHovered">
-          <img key="logo" src="/vite.svg" alt="Logo" class="h-14 w-14 justify-center">
+          <img
+            key="logo"
+            src="/vite.svg"
+            alt="Logo"
+            class="h-14 w-14 justify-center"
+          />
         </template>
         <template v-else>
-          <div key="menu" class="h-full w-full flex flex-col transition-opacity duration-200" :class="{ 'opacity-0': !isHovered }">
+          <div
+            key="menu"
+            class="h-full w-full flex flex-col justify-center transition-opacity duration-200"
+            :class="{ 'opacity-0': !isHovered }"
+          >
             <ul class="w-full flex flex-col list-none justify-center">
               <li
                 v-for="item in navItems"
@@ -58,17 +70,18 @@ onMounted(() => {
               >
                 <RouterLink
                   :to="item.path"
-                  class="flex items-center gap-2 rounded-full px-4 py-2 text-gray-700 no-underline hover:bg-gray-100"
+                  class="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-700 no-underline hover:bg-gray-100"
                 >
-                  <span class="h-5 w-5" :class="[item.icon]" />
+                  <span
+                    class="h-5 w-5"
+                    :class="[item.icon]"
+                  />
                   <span class="text-sm">{{ item.label }}</span>
                 </RouterLink>
               </li>
             </ul>
 
-            <div class="mt-2 border-t border-gray-100 pt-2">
-              <ThemeSwitcher />
-            </div>
+            <div class="mt-2 border-t border-gray-100 pt-2"></div>
           </div>
         </template>
       </transition>
@@ -79,7 +92,9 @@ onMounted(() => {
 <style scoped>
 .fade-swap-enter-active,
 .fade-swap-leave-active {
-  transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition:
+    opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .fade-swap-enter-from,

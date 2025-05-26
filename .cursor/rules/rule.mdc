@@ -8,10 +8,10 @@ description: Vue.js best practices and patterns for modern web applications
 globs: **/*.vue, **/*.ts, components/**/*
 ---
 
-- 本项目使用组件库 Arco Design Vue, 应当尽量使用组件
+- 本项目使用未使用任何组件库，但在 src/components/ui 下有自定义组件库
 
 - 本项目使用 UnoCSS 来进行样式管理和布局控制
 
 - 本项目使用 Pinia 来进行状态管理
 
-- 尽量少写注释, 只在必要处写注释. 写英文注释
+- 尽量少写注释, 只在必要处写注释, 不得出现太多注释. 写英文注释.
