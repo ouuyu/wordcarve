@@ -35,34 +35,28 @@ function resetPopoverState() {
   state.popover.clickedWordIndex = null
 }
 
-// 全局事件名称
 const CLOSE_POPOVERS_EVENT = 'close-popovers'
 
-// 处理其他实例关闭弹窗事件
+const instanceId = Math.random().toString(36).substr(2, 9)
+
 function handleClosePopovers(event: CustomEvent) {
   if (event.detail.instanceId !== instanceId) {
     resetPopoverState()
   }
 }
 
-// 生成唯一实例ID
-const instanceId = Math.random().toString(36).substr(2, 9)
-
-// 分发关闭其他弹窗事件
 function dispatchClosePopovers() {
   window.dispatchEvent(
     new CustomEvent(CLOSE_POPOVERS_EVENT, { detail: { instanceId } }),
   )
 }
 
-// 处理全局点击
 function handleGlobalClick(event: MouseEvent) {
   if (componentRoot.value && !componentRoot.value.contains(event.target as Node)) {
     resetPopoverState()
   }
 }
 
-// 监听全局事件
 onMounted(() => {
   window.addEventListener(CLOSE_POPOVERS_EVENT, handleClosePopovers as EventListener)
   document.addEventListener('click', handleGlobalClick)
@@ -74,7 +68,6 @@ onUnmounted(() => {
   resetPopoverState()
 })
 
-// 监听文本变化
 watch(
   () => props.text,
   async (newValue) => {
@@ -85,14 +78,11 @@ watch(
   { immediate: true },
 )
 
-// 分词
 const words = computed(() => {
   return rawText.value.match(/[\w'-]+|[^\w\s'-]+/g) || []
 })
 
-// 处理单词点击
 async function handleWordClick(event: MouseEvent, word: string, index: number) {
-  // 只处理英文单词
   if (!/^[a-z'-]+$/i.test(word)) {
     if (state.popover.visible)
       resetPopoverState()
@@ -101,20 +91,16 @@ async function handleWordClick(event: MouseEvent, word: string, index: number) {
 
   const clickedElement = event.currentTarget as HTMLElement
 
-  // 如果点击的是当前打开的单词，则关闭弹窗
   if (state.popover.targetElement === clickedElement && state.popover.visible) {
     resetPopoverState()
     return
   }
 
-  // 关闭其他实例的弹窗
   dispatchClosePopovers()
 
-  // 重置当前状态
   resetPopoverState()
   await nextTick()
 
-  // 设置新状态
   state.popover.currentWord = word.toLowerCase()
   state.popover.targetElement = clickedElement
   state.popover.clickedWordIndex = index
@@ -122,11 +108,9 @@ async function handleWordClick(event: MouseEvent, word: string, index: number) {
   state.popover.visible = true
 
   try {
-    // 确保字典已加载
     if (!dictionaryStore.dictionary.length) {
       await dictionaryStore.loadDictionary()
     }
-    // 查询单词
     state.popover.wordInfo = dictionaryStore.searchWord(state.popover.currentWord)
   }
   catch (error) {
@@ -138,7 +122,6 @@ async function handleWordClick(event: MouseEvent, word: string, index: number) {
   }
 }
 
-// 处理鼠标抬起事件（用于文本选择）
 function handleMouseUp(event: MouseEvent) {
   const targetElement = event.target as HTMLElement
   if (targetElement.closest('.arco-dropdown'))
@@ -151,12 +134,10 @@ function handleMouseUp(event: MouseEvent) {
   }
 }
 
-// 禁用右键菜单
 function handleContextMenu(event: MouseEvent) {
   event.preventDefault()
 }
 
-// 监听空文本
 watch(rawText, (newText) => {
   if (!newText || newText.trim() === '') {
     resetPopoverState()
