@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import type { CSSProperties } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -46,11 +46,11 @@ const props = defineProps({
   },
 })
 
-const router = useRouter()
-
-const emit = defineEmits<{
+const _emit = defineEmits<{
   (e: 'navigate', word: string): void
 }>()
+
+const router = useRouter()
 
 const popoverRef = ref<HTMLElement | null>(null)
 const position = ref({ top: 0, left: 0 })
@@ -63,7 +63,8 @@ let resizeObserver: ResizeObserver | null = null
 let mutationObserver: MutationObserver | null = null
 
 function calculatePosition() {
-  if (!props.target || !popoverRef.value) return
+  if (!props.target || !popoverRef.value)
+    return
 
   const targetRect = props.target.getBoundingClientRect()
   const popoverRect = popoverRef.value.getBoundingClientRect()
@@ -87,7 +88,8 @@ function calculatePosition() {
   if (bottomEdge > viewportHeight) {
     // 放到目标元素上方
     top = targetRect.top - popoverRect.height - props.offset + scrollTop
-    if (top < scrollTop) top = scrollTop + 8
+    if (top < scrollTop)
+      top = scrollTop + 8
   }
 
   position.value = { top, left }
@@ -105,19 +107,22 @@ function updatePosition() {
 
 // 设置观察器
 function setupObservers() {
-  if (!props.target) return
+  if (!props.target)
+    return
 
   // 创建 ResizeObserver
   if (!resizeObserver) {
     resizeObserver = new ResizeObserver(() => {
-      if (props.visible) updatePosition()
+      if (props.visible)
+        updatePosition()
     })
   }
 
   // 创建 MutationObserver
   if (!mutationObserver) {
     mutationObserver = new MutationObserver(() => {
-      if (props.visible) updatePosition()
+      if (props.visible)
+        updatePosition()
     })
   }
 
@@ -164,7 +169,8 @@ watch(() => props.visible, (visible) => {
       calculatePosition()
       setupObservers()
     })
-  } else {
+  }
+  else {
     cleanupObservers()
   }
 })
@@ -210,12 +216,13 @@ const popoverStyle = computed<CSSProperties>(() => ({
 
 // 跳转到词刻搜索页
 function navigateToSearch() {
-  if (!props.word) return
+  if (!props.word)
+    return
   router.push(`/search?q=${encodeURIComponent(props.word)}`)
 }
 
 // 处理字典跳转
-function handleDictClick(dictionary: { url: string; name: string }) {
+function _handleDictClick(dictionary: { url: string, name: string }) {
   const url = `${dictionary.url}${props.word}`
   window.open(url, '_blank')
 }

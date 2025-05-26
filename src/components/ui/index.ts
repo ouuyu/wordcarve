@@ -14,7 +14,7 @@ export {
   Skeleton,
   SkeletonLine,
   Space,
-  ThemeConfig
+  ThemeConfig,
 }
 
 export default {
@@ -24,5 +24,5 @@ export default {
   Skeleton,
   SkeletonLine,
   Space,
-  ThemeConfig
-} 
+  ThemeConfig,
+}

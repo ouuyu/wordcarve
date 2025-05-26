@@ -5,29 +5,29 @@ const props = defineProps({
   type: {
     type: String,
     default: 'default',
-    validator: (value: string) => ['default', 'primary', 'outline', 'text', 'danger'].includes(value)
+    validator: (value: string) => ['default', 'primary', 'outline', 'text', 'danger'].includes(value),
   },
   size: {
     type: String,
     default: 'md',
-    validator: (value: string) => ['xs', 'sm', 'md', 'lg'].includes(value)
+    validator: (value: string) => ['xs', 'sm', 'md', 'lg'].includes(value),
   },
   disabled: {
     type: Boolean,
-    default: false
+    default: false,
   },
   block: {
     type: Boolean,
-    default: false
+    default: false,
   },
   loading: {
     type: Boolean,
-    default: false
+    default: false,
   },
   icon: {
     type: String,
-    default: ''
-  }
+    default: '',
+  },
 })
 
 const emit = defineEmits(['click'])
@@ -40,31 +40,32 @@ function handleClick(event: MouseEvent) {
 
 // 计算按钮类名
 const buttonClass = computed(() => {
-  const classes = ['custom-button']; // Base class for new styles
+  const classes = ['custom-button'] // Base class for new styles
 
   // Add type-specific class. props.type is guaranteed by validator and default.
-  classes.push(`custom-button--${props.type}`);
+  classes.push(`custom-button--${props.type}`)
 
   // Add size-specific class. props.size is guaranteed by validator and default.
-  classes.push(`custom-button--${props.size}`);
+  classes.push(`custom-button--${props.size}`)
 
   if (props.disabled || props.loading) {
-    classes.push('custom-button--disabled');
+    classes.push('custom-button--disabled')
   }
 
   // Add w-full for block buttons (UnoCSS utility class)
   if (props.block) {
-    classes.push('w-full');
+    classes.push('w-full')
   }
-  
-  return classes.join(' ');
-});
+
+  return classes.join(' ')
+})
 
 // 计算图标类
 const iconClass = computed(() => {
   if (props.size === 'xs' || props.size === 'sm') {
     return 'w-4 h-4 mr-1'
-  } else if (props.size === 'lg') {
+  }
+  else if (props.size === 'lg') {
     return 'w-6 h-6 mr-1'
   }
   return 'w-5 h-5 mr-1'
@@ -72,16 +73,16 @@ const iconClass = computed(() => {
 </script>
 
 <template>
-  <button 
-    :class="buttonClass" 
+  <button
+    :class="buttonClass"
     :disabled="disabled || loading"
     @click="handleClick"
   >
-    <span v-if="loading" class="i-svg-spinners:270-ring-with-bg" :class="iconClass"></span>
-    <span v-else-if="icon" :class="['i-' + icon, iconClass]"></span>
-    <slot></slot>
+    <span v-if="loading" class="i-svg-spinners:270-ring-with-bg" :class="iconClass" />
+    <span v-else-if="icon" :class="[`i-${icon}`, iconClass]" />
+    <slot />
   </button>
-</template> 
+</template>
 
 <style scoped>
 .custom-button {
@@ -251,4 +252,4 @@ const iconClass = computed(() => {
 .custom-button span[class*="i-"] {
   vertical-align: -0.125em;
 }
-</style> 
+</style>

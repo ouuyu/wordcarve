@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import MyPopover from '@/components/my/MyPopover.vue'
 import { useDictionaryStore } from '@/stores/dictionaryStore'
-import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 
 const props = defineProps<{ text: string }>()
 const emit = defineEmits<{
@@ -168,7 +168,7 @@ watch(rawText, (newText) => {
   <div
     ref="componentRoot"
     :key="rawText"
-    class="my-text-component interactive-text leading-relaxed"
+    class="interactive-text my-text-component leading-relaxed"
     @mouseup="handleMouseUp"
     @contextmenu="handleContextMenu"
   >
@@ -176,8 +176,8 @@ watch(rawText, (newText) => {
       <template v-for="(word, index) in words" :key="`${word}-${index}`">
         <span
           v-if="/^[a-zA-Z'-]+$/.test(word)"
-          class="word-token cursor-pointer rounded px-0.5 transition-colors duration-150 hover:bg-arcoblue-2"
-          :class="[{ 'bg-arcoblue-1': state.popover.clickedWordIndex === index && state.popover.visible }]"
+          class="word-token hover:bg-theme-2 cursor-pointer rounded px-0.5 transition-colors duration-150"
+          :class="[{ 'bg-theme-1': state.popover.clickedWordIndex === index && state.popover.visible }]"
           @click.stop="handleWordClick($event, word, index)"
         >
           {{ word }}
@@ -244,7 +244,12 @@ watch(rawText, (newText) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

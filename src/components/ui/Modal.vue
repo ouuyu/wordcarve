@@ -1,40 +1,40 @@
 <script setup lang="ts">
-import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Button from './Button.vue'
 
 const props = defineProps({
   visible: {
     type: Boolean,
-    default: false
+    default: false,
   },
   title: {
     type: String,
-    default: ''
+    default: '',
   },
   width: {
     type: [String, Number],
-    default: '500px'
+    default: '500px',
   },
   maskClosable: {
     type: Boolean,
-    default: true
+    default: true,
   },
   showFooter: {
     type: Boolean,
-    default: true
+    default: true,
   },
   okText: {
     type: String,
-    default: '确定'
+    default: '确定',
   },
   cancelText: {
     type: String,
-    default: '取消'
+    default: '取消',
   },
   loading: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const emit = defineEmits(['update:visible', 'ok', 'cancel'])
@@ -44,13 +44,14 @@ const modalRef = ref<HTMLElement | null>(null)
 // 计算样式
 const modalStyle = computed(() => {
   const style: Record<string, string> = {}
-  
+
   if (typeof props.width === 'number') {
     style.width = `${props.width}px`
-  } else {
+  }
+  else {
     style.width = props.width
   }
-  
+
   return style
 })
 
@@ -102,7 +103,8 @@ onBeforeUnmount(() => {
 watch(() => props.visible, (visible) => {
   if (visible) {
     document.body.classList.add('overflow-hidden')
-  } else {
+  }
+  else {
     document.body.classList.remove('overflow-hidden')
   }
 })
@@ -126,8 +128,8 @@ watch(() => props.visible, (visible) => {
         @click="handleMaskClick"
       >
         <!-- 遮罩层 -->
-        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-        
+        <div class="absolute inset-0 bg-black bg-opacity-50" />
+
         <!-- 模态框内容 -->
         <div
           ref="modalRef"
@@ -137,28 +139,34 @@ watch(() => props.visible, (visible) => {
         >
           <!-- 标题栏 -->
           <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3">
-            <h3 class="text-lg font-medium">{{ title }}</h3>
+            <h3 class="text-lg font-medium">
+              {{ title }}
+            </h3>
             <button
               class="text-gray-500 hover:text-gray-700 focus:outline-none"
               @click="close"
             >
-              <span class="i-carbon:close w-5 h-5"></span>
+              <span class="i-carbon:close h-5 w-5" />
             </button>
           </div>
-          
+
           <!-- 内容区域 -->
           <div class="p-4">
-            <slot></slot>
+            <slot />
           </div>
-          
+
           <!-- 底部按钮区域 -->
           <div
             v-if="showFooter"
-            class="flex justify-end space-x-2 border-t border-gray-200 px-4 py-3"
+            class="flex justify-end border-t border-gray-200 px-4 py-3 space-x-2"
           >
             <slot name="footer">
-              <Button @click="handleCancel">{{ cancelText }}</Button>
-              <Button type="primary" :loading="loading" @click="handleOk">{{ okText }}</Button>
+              <Button @click="handleCancel">
+                {{ cancelText }}
+              </Button>
+              <Button type="primary" :loading="loading" @click="handleOk">
+                {{ okText }}
+              </Button>
             </slot>
           </div>
         </div>
@@ -248,4 +256,4 @@ watch(() => props.visible, (visible) => {
   border-bottom-left-radius: var(--border-radius-large);
   border-bottom-right-radius: var(--border-radius-large);
 }
-</style> 
+</style>

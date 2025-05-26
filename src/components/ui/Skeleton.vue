@@ -4,28 +4,28 @@ import { computed } from 'vue'
 const props = defineProps({
   loading: {
     type: Boolean,
-    default: true
+    default: true,
   },
   animation: {
     type: Boolean,
-    default: true
+    default: true,
   },
   count: {
     type: Number,
-    default: 1
+    default: 1,
   },
   height: {
     type: String,
-    default: ''
+    default: '',
   },
   width: {
     type: String,
-    default: '100%'
+    default: '100%',
   },
   circle: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 // 生成骨架项的数组
@@ -56,7 +56,8 @@ const skeletonClass = computed(() => {
   }
   if (props.circle) {
     classes.push('rounded-full')
-  } else {
+  }
+  else {
     classes.push('rounded')
   }
   return classes.join(' ')
@@ -64,8 +65,8 @@ const skeletonClass = computed(() => {
 </script>
 
 <template>
-  <div class="skeleton" v-if="loading">
-    <slot v-if="$slots.default"></slot>
+  <div v-if="loading" class="skeleton">
+    <slot v-if="$slots.default" />
     <template v-else>
       <div
         v-for="index in skeletonItems"
@@ -76,7 +77,7 @@ const skeletonClass = computed(() => {
     </template>
   </div>
   <div v-else>
-    <slot></slot>
+    <slot />
   </div>
 </template>
 
@@ -127,4 +128,4 @@ const skeletonClass = computed(() => {
 .rounded-full {
   border-radius: 50%;
 }
-</style> 
+</style>

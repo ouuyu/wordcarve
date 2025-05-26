@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import FloatingMenu from '@/components/layout/FloatingMenu.vue'
 import { onMounted } from 'vue'
+import FloatingMenu from '@/components/layout/FloatingMenu.vue'
 import { useDictionaryStore } from './stores/dictionaryStore'
 
 const dictionaryStore = useDictionaryStore()
@@ -17,7 +17,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-arcoblue-1">
+  <div class="bg-theme-1 min-h-screen flex flex-col">
     <!-- 主区域 -->
     <main class="mx-auto max-w-1200px w-full flex-1 p-8">
       <transition name="slide">

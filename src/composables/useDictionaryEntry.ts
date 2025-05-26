@@ -1,7 +1,7 @@
 import type { DictionaryEntry } from '@/types'
 import type { PronunciationType } from '@/utils/audio'
-import { playWordPronunciation } from '@/utils/audio'
 import { computed, ref } from 'vue'
+import { playWordPronunciation } from '@/utils/audio'
 
 interface UseDictionaryEntryProps {
   word: DictionaryEntry

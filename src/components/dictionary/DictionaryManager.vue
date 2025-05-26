@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Message } from '@/utils/message'
 import { computed, ref } from 'vue'
+import { Button, Modal } from '@/components/ui'
+import { Message } from '@/utils/message'
 import { useDictionaryStore } from '../../stores/dictionaryStore'
 import DictionaryCard from './DictionaryCard.vue'
 import DictionaryDownloader from './DictionaryDownloader.vue'
 import DictionaryUploader from './DictionaryUploader.vue'
-import { Button, Modal } from '@/components/ui'
 
 const dictionaryStore = useDictionaryStore()
 const showDownloader = ref(false)

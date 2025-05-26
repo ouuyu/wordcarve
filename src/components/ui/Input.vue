@@ -4,45 +4,45 @@ import { computed, ref } from 'vue'
 const props = defineProps({
   modelValue: {
     type: [String, Number],
-    default: ''
+    default: '',
   },
   type: {
     type: String,
-    default: 'text'
+    default: 'text',
   },
   placeholder: {
     type: String,
-    default: ''
+    default: '',
   },
   disabled: {
     type: Boolean,
-    default: false
+    default: false,
   },
   readonly: {
     type: Boolean,
-    default: false
+    default: false,
   },
   error: {
     type: Boolean,
-    default: false
+    default: false,
   },
   size: {
     type: String,
     default: 'md',
-    validator: (value: string) => ['sm', 'md', 'lg'].includes(value)
+    validator: (value: string) => ['sm', 'md', 'lg'].includes(value),
   },
   maxLength: {
     type: Number,
-    default: undefined
+    default: undefined,
   },
   showWordLimit: {
     type: Boolean,
-    default: false
+    default: false,
   },
   allowClear: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const emit = defineEmits(['update:modelValue', 'change', 'focus', 'blur', 'clear'])
@@ -55,29 +55,31 @@ const inputClass = computed(() => {
   const classes = [
     'custom-input',
   ]
-  
+
   // 尺寸
   if (props.size === 'sm') {
     classes.push('custom-input--sm')
-  } else if (props.size === 'lg') {
+  }
+  else if (props.size === 'lg') {
     classes.push('custom-input--lg')
-  } else {
+  }
+  else {
     classes.push('custom-input--md')
   }
-  
+
   // 状态
   if (props.disabled) {
     classes.push('custom-input--disabled')
   }
-  
+
   if (props.error) {
     classes.push('custom-input--error')
   }
-  
+
   if (focused.value) {
     classes.push('custom-input--focused')
   }
-  
+
   return classes.join(' ')
 })
 
@@ -144,21 +146,21 @@ const charCount = computed(() => {
       @change="handleChange"
       @focus="handleFocus"
       @blur="handleBlur"
-    />
-    
+    >
+
     <!-- 清除按钮 -->
     <div
       v-if="allowClear && modelValue && !disabled && !readonly"
-      class="absolute right-2 top-1/2 flex -translate-y-1/2 cursor-pointer items-center"
+      class="absolute right-2 top-1/2 flex cursor-pointer items-center -translate-y-1/2"
       @click="clearInput"
     >
-      <span class="i-carbon:close-filled w-4 h-4 text-gray-400 hover:text-gray-600"></span>
+      <span class="i-carbon:close-filled h-4 w-4 text-gray-400 hover:text-gray-600" />
     </div>
-    
+
     <!-- 字数限制 -->
     <div
       v-if="showWordLimit && maxLength"
-      class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400"
+      class="absolute right-2 top-1/2 text-xs text-gray-400 -translate-y-1/2"
     >
       {{ charCount }}/{{ maxLength }}
     </div>
@@ -240,4 +242,4 @@ const charCount = computed(() => {
 .custom-input-wrapper div[class*="absolute right-2"] {
   color: var(--color-text-secondary);
 }
-</style> 
+</style>

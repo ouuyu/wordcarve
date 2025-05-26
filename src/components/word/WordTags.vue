@@ -18,7 +18,7 @@ defineProps<{
     </span>
     <span
       v-if="word.collins"
-      class="rounded-full bg-arcoblue-2 px-3 py-1 text-sm text-arcoblue-7"
+      class="bg-theme-2 text-theme-7 rounded-full px-3 py-1 text-sm"
     >
       柯林斯 {{ word.collins }}星
     </span>

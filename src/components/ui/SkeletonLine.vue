@@ -4,20 +4,20 @@ import { computed } from 'vue'
 const props = defineProps({
   rows: {
     type: Number,
-    default: 1
+    default: 1,
   },
   width: {
     type: Array as () => Array<string>,
-    default: () => ['100%']
+    default: () => ['100%'],
   },
   animation: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 })
 
 // 获取每行宽度，如果 width 数组长度小于 rows，则后续行使用 100%
-const getRowWidth = (index: number) => {
+function getRowWidth(index: number) {
   if (index < props.width.length) {
     return props.width[index]
   }
@@ -82,4 +82,4 @@ const lineItems = computed(() => {
     transform: translateX(100%);
   }
 }
-</style> 
+</style>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DailyQuote } from '@/utils/quote'
-import { getDailyQuote } from '@/utils/quote'
 import { onMounted, ref } from 'vue'
+import { getDailyQuote } from '@/utils/quote'
 
 const quote = ref<DailyQuote | null>(null)
 

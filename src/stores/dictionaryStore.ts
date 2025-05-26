@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import type { DictionaryEntry } from '../types'
 import { defineStore } from 'pinia'
 import { IndexedDB } from '../utils/indexedDB'

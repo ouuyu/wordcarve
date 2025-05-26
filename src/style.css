@@ -48,3 +48,64 @@ body {
   font-family: 'Mixed-En', 'Mixed-Cn', 'Merriweather', 'Microsoft YaHei', sans-serif;
   line-height: 1.5;
 }
+
+/* 添加主题 CSS 变量 */
+:root {
+  /* 默认变量，会被 JS 动态覆盖 */
+  --theme-1: #f8f5e6;
+  --theme-2: #f0ead6;
+  --theme-3: #e1d5c1;
+  --theme-4: #d1c0a5;
+  --theme-5: #c9ad8a;
+  --theme-6: #a87c4f;
+  --theme-7: #876239;
+  --theme-8: #664b2c;
+  --theme-9: #543a3a;
+  --theme-10: #42332d;
+}
+
+/* 主题颜色工具类 */
+.bg-theme-1 { background-color: var(--theme-1); }
+.bg-theme-2 { background-color: var(--theme-2); }
+.bg-theme-3 { background-color: var(--theme-3); }
+.bg-theme-4 { background-color: var(--theme-4); }
+.bg-theme-5 { background-color: var(--theme-5); }
+.bg-theme-6 { background-color: var(--theme-6); }
+.bg-theme-7 { background-color: var(--theme-7); }
+.bg-theme-8 { background-color: var(--theme-8); }
+.bg-theme-9 { background-color: var(--theme-9); }
+.bg-theme-10 { background-color: var(--theme-10); }
+
+.text-theme-1 { color: var(--theme-1); }
+.text-theme-2 { color: var(--theme-2); }
+.text-theme-3 { color: var(--theme-3); }
+.text-theme-4 { color: var(--theme-4); }
+.text-theme-5 { color: var(--theme-5); }
+.text-theme-6 { color: var(--theme-6); }
+.text-theme-7 { color: var(--theme-7); }
+.text-theme-8 { color: var(--theme-8); }
+.text-theme-9 { color: var(--theme-9); }
+.text-theme-10 { color: var(--theme-10); }
+
+.border-theme-1 { border-color: var(--theme-1); }
+.border-theme-2 { border-color: var(--theme-2); }
+.border-theme-3 { border-color: var(--theme-3); }
+.border-theme-4 { border-color: var(--theme-4); }
+.border-theme-5 { border-color: var(--theme-5); }
+.border-theme-6 { border-color: var(--theme-6); }
+.border-theme-7 { border-color: var(--theme-7); }
+.border-theme-8 { border-color: var(--theme-8); }
+.border-theme-9 { border-color: var(--theme-9); }
+.border-theme-10 { border-color: var(--theme-10); }
+
+/* 主题相关的交互状态 */
+.hover\:bg-theme-1:hover { background-color: var(--theme-1); }
+.hover\:bg-theme-2:hover { background-color: var(--theme-2); }
+.hover\:bg-theme-5:hover { background-color: var(--theme-5); }
+.hover\:text-theme-5:hover { color: var(--theme-5); }
+.hover\:text-theme-6:hover { color: var(--theme-6); }
+.hover\:text-theme-7:hover { color: var(--theme-7); }
+
+.active\:bg-theme-2:active { background-color: var(--theme-2); }
+.active\:bg-theme-7:active { background-color: var(--theme-7); }
+.active\:text-theme-7:active { color: var(--theme-7); }

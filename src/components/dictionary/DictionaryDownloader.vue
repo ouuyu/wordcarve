@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Message } from '@/utils/message'
 import { computed, reactive, ref } from 'vue'
-import { useDictionaryStore } from '../../stores/dictionaryStore'
 import { Button, Input, Modal } from '@/components/ui'
+import { Message } from '@/utils/message'
+import { useDictionaryStore } from '../../stores/dictionaryStore'
 
 const emit = defineEmits(['close'])
 const dictionaryStore = useDictionaryStore()
@@ -156,7 +156,7 @@ function cancelDownload() {
       :width="isMobile ? '95%' : '500px'"
     >
       <div class="flex flex-col items-center justify-center p-6">
-        <div class="i-svg-spinners:270-ring-with-bg w-10 h-10 text-blue-500"></div>
+        <div class="i-svg-spinners:270-ring-with-bg h-10 w-10 text-blue-500" />
         <div class="mt-4 text-center">
           <div class="mb-2 text-lg font-medium">
             正在下载: {{ downloadStatus.currentName }}
@@ -175,18 +175,22 @@ function cancelDownload() {
       </div>
     </Modal>
 
-    <div v-if="downloadStatus.error" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
+    <div v-if="downloadStatus.error" class="mb-4 border border-red-200 rounded bg-red-50 p-3 text-red-700">
       {{ downloadStatus.error }}
     </div>
 
-    <div class="border-t border-gray-200 my-4 pt-4">
-      <h3 class="text-center mb-4 text-gray-600">预置词库</h3>
+    <div class="my-4 border-t border-gray-200 pt-4">
+      <h3 class="mb-4 text-center text-gray-600">
+        预置词库
+      </h3>
     </div>
 
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <div v-for="(dict, index) in predefinedUrls" :key="index" class="mb-4">
-        <div class="border rounded-md p-4 bg-white">
-          <h4 class="text-lg font-medium mb-2">{{ dict.name }}</h4>
+        <div class="border rounded-md bg-white p-4">
+          <h4 class="mb-2 text-lg font-medium">
+            {{ dict.name }}
+          </h4>
           <p class="mb-2 text-sm text-gray-500">
             {{ dict.description }}
           </p>
@@ -197,8 +201,8 @@ function cancelDownload() {
             type="primary"
             size="sm"
             :disabled="downloadStatus.isDownloading"
-            @click="downloadDictionary(dict.url, dict.name)"
             icon="carbon:download"
+            @click="downloadDictionary(dict.url, dict.name)"
           >
             下载
           </Button>
@@ -206,8 +210,10 @@ function cancelDownload() {
       </div>
     </div>
 
-    <div class="border-t border-gray-200 my-4 pt-4">
-      <h3 class="text-center mb-4 text-gray-600">自定义URL</h3>
+    <div class="my-4 border-t border-gray-200 pt-4">
+      <h3 class="mb-4 text-center text-gray-600">
+        自定义URL
+      </h3>
     </div>
 
     <div class="flex flex-col space-y-4">

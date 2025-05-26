@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
-import WordDisplay from '@/components/word/WordDisplay.vue'
+import { onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import EmptyDictionaryGuide from '@/components/dictionary/EmptyDictionaryGuide.vue'
+import { Skeleton, SkeletonLine, Space } from '@/components/ui'
+import WordDisplay from '@/components/word/WordDisplay.vue'
 import { useDictionaryStore } from '@/stores/dictionaryStore'
 import { Message } from '@/utils/message'
-import { Skeleton, SkeletonLine, Space } from '@/components/ui'
-import { onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 
 const searchQuery = ref('')
 const loading = ref(false)
@@ -31,7 +31,7 @@ watch(
       }
       await searchWord()
     }
-  }
+  },
 )
 
 // 加载数据库
@@ -40,13 +40,16 @@ async function loadDictionary() {
     dbLoading.value = true
     try {
       await dictionaryStore.loadDictionary()
-    } catch (error) {
+    }
+    catch (error) {
       console.error('加载字典失败:', error)
       Message.error('加载字典失败，请刷新页面重试')
-    } finally {
+    }
+    finally {
       dbLoading.value = false
     }
-  } else {
+  }
+  else {
     dbLoading.value = false
   }
 }
@@ -161,14 +164,14 @@ function handleRecentSearch(word: DictionaryEntry) {
         >
         <button
           class="search-button"
-          @click="searchWord"
           :disabled="loading || dbLoading"
+          @click="searchWord"
         >
-          <div v-if="loading || dbLoading" class="loading-icon"></div>
-          <div v-else class="i-carbon:search w-5 h-5"></div>
+          <div v-if="loading || dbLoading" class="loading-icon" />
+          <div v-else class="i-carbon:search h-5 w-5" />
         </button>
       </div>
-      
+
       <!-- 当词典为空时显示引导 -->
       <EmptyDictionaryGuide v-if="!dbLoading && dictionaryStore.dictionary.length === 0" />
 
@@ -181,7 +184,7 @@ function handleRecentSearch(word: DictionaryEntry) {
             <SkeletonLine :rows="2" :width="['100%', '70%']" />
           </Space>
         </Skeleton>
-        
+
         <!-- 搜索加载中 -->
         <Skeleton v-else-if="loading" :loading="true" class="skeleton-card">
           <Space direction="vertical" :style="{ width: '100%' }" size="large">
@@ -190,7 +193,7 @@ function handleRecentSearch(word: DictionaryEntry) {
             <SkeletonLine :rows="2" :width="['100%', '70%']" />
           </Space>
         </Skeleton>
-        
+
         <!-- 搜索结果 -->
         <transition name="fade" mode="out-in">
           <div v-if="searchResult && !loading && !dbLoading" :key="animationKey">

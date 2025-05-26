@@ -1,4 +1,4 @@
-import { createVNode, h, render, ref, onMounted, onBeforeUnmount, Transition } from 'vue'
+import { createVNode, h, onBeforeUnmount, onMounted, ref, render, Transition } from 'vue'
 
 interface MessageOptions {
   content: string
@@ -28,7 +28,8 @@ const MessageComponent = {
     })
 
     onBeforeUnmount(() => {
-      if (timer) clearTimeout(timer)
+      if (timer)
+        clearTimeout(timer)
     })
 
     expose({
@@ -45,11 +46,11 @@ const MessageComponent = {
         error: 'bg-red-50 border-red-200 text-red-700',
       }[props.type as string] || 'bg-gray-50 border-gray-200 text-gray-700'
 
-      return visible.value 
+      return visible.value
         ? h(Transition, { name: 'message-fade' }, {
             default: () => h('div', {
-              class: `fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded border ${typeClass} shadow-sm z-50`
-            }, props.content)
+              class: `fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded border ${typeClass} shadow-sm z-50`,
+            }, props.content),
           })
         : null
     }
@@ -64,16 +65,16 @@ function createMessage(options: MessageOptions) {
     type: options.type || 'info',
     duration: options.duration || 3000,
   })
-  
+
   render(vm, container)
   document.body.appendChild(container)
-  
+
   // 销毁消息
   const destroy = () => {
     render(null, container)
     container.remove()
   }
-  
+
   // 添加过渡效果结束监听
   const el = container.firstElementChild
   if (el) {
@@ -83,7 +84,7 @@ function createMessage(options: MessageOptions) {
       }
     })
   }
-  
+
   return {
     close: () => {
       (vm.component?.exposed as any)?.close()
@@ -120,4 +121,4 @@ style.textContent = `
   transform: translate(-50%, -20px);
 }
 `
-document.head.appendChild(style) 
+document.head.appendChild(style)

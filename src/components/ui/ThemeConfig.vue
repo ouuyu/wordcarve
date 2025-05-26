@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 // 定义主题类型
 type ThemeMode = 'light' | 'dark' | 'system'
@@ -14,13 +14,13 @@ const props = defineProps({
   // 是否显示主题切换按钮
   showThemeToggle: {
     type: Boolean,
-    default: true
+    default: true,
   },
   // 是否显示颜色配置
   showColorConfig: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 // 当前主题模式
@@ -28,7 +28,7 @@ const themeMode = ref<ThemeMode>(getInitialThemeMode())
 // 主题颜色
 const themeColors = ref<ThemeColors>({
   primary: getCssVariable('--color-primary') || '#4c8bf5',
-  danger: getCssVariable('--color-danger') || '#f56c6c'
+  danger: getCssVariable('--color-danger') || '#f56c6c',
 })
 
 // 监听主题切换
@@ -52,25 +52,26 @@ onMounted(() => {
       const colors = JSON.parse(savedColors)
       themeColors.value = {
         ...themeColors.value,
-        ...colors
+        ...colors,
       }
       applyThemeColors(themeColors.value)
-    } catch (e) {
+    }
+    catch (e) {
       console.error('无法解析保存的主题颜色', e)
     }
   }
-  
+
   // 应用主题模式
   applyThemeMode(themeMode.value)
-  
+
   // 如果是系统主题，添加媒体查询监听
   if (themeMode.value === 'system') {
     const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    
+
     const handleChange = (e: MediaQueryListEvent) => {
       applyDarkMode(e.matches)
     }
-    
+
     darkMediaQuery.addEventListener('change', handleChange)
   }
 })
@@ -89,7 +90,8 @@ function applyThemeMode(mode: ThemeMode) {
   if (mode === 'system') {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     applyDarkMode(prefersDark)
-  } else {
+  }
+  else {
     applyDarkMode(mode === 'dark')
   }
 }
@@ -98,7 +100,8 @@ function applyThemeMode(mode: ThemeMode) {
 function applyDarkMode(isDark: boolean) {
   if (isDark) {
     document.documentElement.classList.add('dark-theme')
-  } else {
+  }
+  else {
     document.documentElement.classList.remove('dark-theme')
   }
 }
@@ -111,7 +114,7 @@ function applyThemeColors(colors: ThemeColors) {
   setCssVariable('--color-primary-active', adjustColor(colors.primary, -10))
   setCssVariable('--color-primary-light', `${colors.primary}18`) // 0.08 透明度
   setCssVariable('--color-primary-lighter', `${colors.primary}0D`) // 0.05 透明度
-  
+
   // 设置危险色及其变体
   setCssVariable('--color-danger', colors.danger)
   setCssVariable('--color-danger-hover', adjustColor(colors.danger, 10))
@@ -123,9 +126,11 @@ function applyThemeColors(colors: ThemeColors) {
 function toggleTheme() {
   if (themeMode.value === 'light') {
     themeMode.value = 'dark'
-  } else if (themeMode.value === 'dark') {
+  }
+  else if (themeMode.value === 'dark') {
     themeMode.value = 'system'
-  } else {
+  }
+  else {
     themeMode.value = 'light'
   }
 }
@@ -142,17 +147,18 @@ function setCssVariable(name: string, value: string) {
 
 // 调整颜色亮度
 function adjustColor(hex: string, amount: number): string {
-  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  if (!result) return hex
-  
-  let r = parseInt(result[1], 16)
-  let g = parseInt(result[2], 16)
-  let b = parseInt(result[3], 16)
-  
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  if (!result)
+    return hex
+
+  let r = Number.parseInt(result[1], 16)
+  let g = Number.parseInt(result[2], 16)
+  let b = Number.parseInt(result[3], 16)
+
   r = Math.max(0, Math.min(255, r + amount))
   g = Math.max(0, Math.min(255, g + amount))
   b = Math.max(0, Math.min(255, b + amount))
-  
+
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
 }
 </script>
@@ -161,20 +167,20 @@ function adjustColor(hex: string, amount: number): string {
   <div class="theme-config">
     <!-- 主题切换按钮 -->
     <div v-if="props.showThemeToggle" class="theme-toggle" @click="toggleTheme">
-      <span v-if="themeMode === 'light'" class="i-carbon:sun w-5 h-5"></span>
-      <span v-else-if="themeMode === 'dark'" class="i-carbon:moon w-5 h-5"></span>
-      <span v-else class="i-carbon:screen w-5 h-5"></span>
+      <span v-if="themeMode === 'light'" class="i-carbon:sun h-5 w-5" />
+      <span v-else-if="themeMode === 'dark'" class="i-carbon:moon h-5 w-5" />
+      <span v-else class="i-carbon:screen h-5 w-5" />
     </div>
-    
+
     <!-- 颜色配置 -->
     <div v-if="props.showColorConfig" class="color-config">
       <div class="color-item">
         <label>主色调</label>
-        <input type="color" v-model="themeColors.primary" />
+        <input v-model="themeColors.primary" type="color">
       </div>
       <div class="color-item">
         <label>危险色</label>
-        <input type="color" v-model="themeColors.danger" />
+        <input v-model="themeColors.danger" type="color">
       </div>
     </div>
   </div>
