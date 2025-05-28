@@ -15,7 +15,7 @@ import ThemeSwitcher from '@/components/settings/ThemeSwitcher.vue'
 
       <div class="section">
         <h2 class="mb-4 text-xl font-semibold">其他设置</h2>
-        <div class="card border border-gray-100 rounded-lg bg-white p-6 shadow-sm">
+        <div class="card bg-grey-100 border border-gray-100 rounded-lg p-6 shadow-sm">
           <div class="mb-4">
             <span class="text-gray-600 text-sm mr-2">主题:</span>
             <ThemeSwitcher />
