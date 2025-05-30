@@ -5,9 +5,17 @@ defineProps<{
 </script>
 
 <template>
-  <span class="frequency-indicator" :title="`词频等级: ${level}`">
+  <span
+    class="frequency-indicator"
+    :title="`词频等级: ${level}`"
+  >
     <div class="signal-bars">
-      <div v-for="i in 5" :key="i" class="bar" :class="{ active: i <= level }" />
+      <div
+        v-for="i in 5"
+        :key="i"
+        class="bar"
+        :class="{ active: i <= level }"
+      />
     </div>
   </span>
 </template>
@@ -52,6 +60,6 @@ defineProps<{
 }
 
 .bar.active {
-  background-color: #52b788;
+  background-color: var(--theme-8);
 }
 </style>
