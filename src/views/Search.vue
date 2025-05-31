@@ -3,8 +3,9 @@ import type { DictionaryEntry } from '@/types'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import EmptyDictionaryGuide from '@/components/dictionary/EmptyDictionaryGuide.vue'
-import { Skeleton, SkeletonLine, Space } from '@/components/ui'
+import { Skeleton, SkeletonLine, Space } from '@/components/ui' // 假设这些组件支持 class 传递
 import WordDisplay from '@/components/word/WordDisplay.vue'
+import OnlineDictionary from '@/components/dictionary/OnlineDictionary.vue'
 import { useDictionaryStore } from '@/stores/dictionaryStore'
 import { Message } from '@/utils/message'
 
@@ -18,11 +19,14 @@ const searchInputRef = ref<HTMLInputElement | null>(null)
 const animationKey = ref(0) // 用于触发搜索结果的动画
 const route = useRoute()
 const router = useRouter()
+const activeTab = ref<'local' | 'online'>('local')
+// 追踪搜索历史展开状态
+const showHistory = ref(false)
 
 // 监听URL参数变化
 watch(
   () => route.query.q,
-  async (newQuery) => {
+  async newQuery => {
     if (newQuery && typeof newQuery === 'string' && newQuery !== searchQuery.value) {
       searchQuery.value = newQuery
       // 确保数据库已加载
@@ -40,16 +44,13 @@ async function loadDictionary() {
     dbLoading.value = true
     try {
       await dictionaryStore.loadDictionary()
-    }
-    catch (error) {
+    } catch (error) {
       console.error('加载字典失败:', error)
       Message.error('加载字典失败，请刷新页面重试')
-    }
-    finally {
+    } finally {
       dbLoading.value = false
     }
-  }
-  else {
+  } else {
     dbLoading.value = false
   }
 }
@@ -75,8 +76,7 @@ onMounted(async () => {
       searchQuery.value = queryParam
       await searchWord()
     }
-  }
-  catch (error) {
+  } catch (error) {
     console.error('加载最近搜索记录失败:', error)
   }
 })
@@ -104,16 +104,13 @@ async function searchWord() {
       // 添加到最近搜索
       addToRecentSearches(result)
       updateUrlQuery(searchQuery.value.trim())
+    } else {
+      Message.info('本地词典中未找到该单词')
     }
-    else {
-      Message.info('没有找到该单词')
-    }
-  }
-  catch (error) {
+  } catch (error) {
     console.error('Error searching word:', error)
     Message.error('查询单词时出错')
-  }
-  finally {
+  } finally {
     loading.value = false
   }
 }
@@ -147,187 +144,196 @@ function handleRecentSearch(word: DictionaryEntry) {
   searchQuery.value = word.word
   searchWord()
 }
+
+// 切换 Tab
+function toggleTab() {
+  activeTab.value = activeTab.value === 'local' ? 'online' : 'local'
+}
 </script>
 
 <template>
-  <div class="max-w-2xl">
-    <div class="flex flex-col items-start">
-      <div class="relative w-full">
-        <input
-          ref="searchInputRef"
-          v-model="searchQuery"
-          type="text"
-          class="search-input"
-          placeholder="搜索单词..."
-          @click="focusSearchInput"
-          @keyup.enter="searchWord"
-        >
+  <div class="max-w-4xl mx-auto px-4 py-8 space-y-6 font-sans text-gray-800 dark:text-gray-100">
+    <div class="space-y-4">
+      <div class="flex gap-3">
+        <div class="flex-1 relative group">
+          <div
+            class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 dark:text-gray-500"
+          >
+            <div
+              i-carbon-search
+              text-xl
+            />
+          </div>
+          <input
+            ref="searchInputRef"
+            v-model="searchQuery"
+            type="text"
+            class="w-full pl-12 pr-6 py-3.5 text-lg rounded-2xl bg-white/40 dark:bg-dark-800/40 backdrop-blur-md border border-gray-200 dark:border-dark-700 shadow-xl shadow-gray-200/20 dark:shadow-black/20 hover:bg-white/60 dark:hover:bg-dark-700/60 focus:(bg-white dark:bg-dark-900 border-primary-500 ring-4 ring-primary-500/15) outline-none transition-all duration-300 ease-in-out"
+            :placeholder="'搜索单词...'"
+            @keyup.enter="searchWord"
+          />
+        </div>
         <button
-          class="search-button"
-          :disabled="loading || dbLoading"
+          class="px-7 rounded-2xl bg-gradient-to-r from-primary-500 to-primary-600 text-white text-lg font-semibold shadow-lg shadow-primary-500/30 hover:from-primary-600 hover:to-primary-700 active:scale-98 transition-all duration-300 ease-out transform"
           @click="searchWord"
         >
-          <div v-if="loading || dbLoading" class="loading-icon" />
-          <div v-else class="i-carbon:search h-5 w-5" />
+          <div
+            i-carbon-search
+            text-xl
+          />
         </button>
       </div>
 
-      <!-- 当词典为空时显示引导 -->
-      <EmptyDictionaryGuide v-if="!dbLoading && dictionaryStore.dictionary.length === 0" />
-
-      <div class="relative mt-6 min-h-[200px] w-full">
-        <!-- 数据库加载中骨架屏 -->
-        <Skeleton v-if="dbLoading" :loading="true" class="skeleton-card">
-          <Space direction="vertical" :style="{ width: '100%' }" size="large">
-            <SkeletonLine :rows="1" :width="['40%']" />
-            <SkeletonLine :rows="1" :width="['25%']" />
-            <SkeletonLine :rows="2" :width="['100%', '70%']" />
-          </Space>
-        </Skeleton>
-
-        <!-- 搜索加载中 -->
-        <Skeleton v-else-if="loading" :loading="true" class="skeleton-card">
-          <Space direction="vertical" :style="{ width: '100%' }" size="large">
-            <SkeletonLine :rows="1" :width="['40%']" />
-            <SkeletonLine :rows="1" :width="['25%']" />
-            <SkeletonLine :rows="2" :width="['100%', '70%']" />
-          </Space>
-        </Skeleton>
-
-        <!-- 搜索结果 -->
-        <transition name="fade" mode="out-in">
-          <div v-if="searchResult && !loading && !dbLoading" :key="animationKey">
-            <WordDisplay
-              :word="searchResult"
-              mode="normal"
-              class="border border-gray-200 rounded-xl bg-white/10 p-6 shadow-sm backdrop-blur-sm"
-            />
-          </div>
-        </transition>
+      <div
+        class="flex p-1.5 gap-2 rounded-2xl bg-white/30 dark:bg-dark-800/30 backdrop-blur-md shadow-inner shadow-gray-200/20 dark:shadow-black/20"
+      >
+        <button
+          class="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-base font-medium transition-all duration-300 ease-in-out transform hover:scale-102 active:scale-98"
+          :class="[
+            activeTab === 'local'
+              ? 'text-primary-700 dark:text-primary-300 bg-white dark:bg-dark-700 shadow-md shadow-gray-300/30 dark:shadow-black/30'
+              : 'text-gray-600 dark:text-gray-400 hover:(text-primary-600 dark:text-primary-400 bg-white/50 dark:bg-dark-700/50)',
+          ]"
+          @click="activeTab = 'local'"
+        >
+          <div
+            i-carbon-book
+            text-lg
+          />
+          本地词典
+        </button>
+        <button
+          class="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-base font-medium transition-all duration-300 ease-in-out transform hover:scale-102 active:scale-98"
+          :class="[
+            activeTab === 'online'
+              ? 'text-primary-700 dark:text-primary-300 bg-white dark:bg-dark-700 shadow-md shadow-gray-300/30 dark:shadow-black/30'
+              : 'text-gray-600 dark:text-gray-400 hover:(text-primary-600 dark:text-primary-400 bg-white/50 dark:bg-dark-700/50)',
+          ]"
+          @click="activeTab = 'online'"
+        >
+          <div
+            i-carbon-cloud
+            text-lg
+          />
+          在线词典
+        </button>
       </div>
+    </div>
 
-      <div v-if="recentSearches.length && !dbLoading" class="mt-8 w-full">
-        <h3 class="mb-4 text-base text-gray-500 font-medium">
+    <div
+      v-if="recentSearches.length > 0"
+      class="rounded-2xl overflow-hidden bg-white/30 dark:bg-dark-800/30 backdrop-blur-md shadow-xl shadow-gray-200/20 dark:shadow-black/20"
+    >
+      <div
+        class="flex items-center justify-between px-5 py-3.5 cursor-pointer hover:bg-white/50 dark:hover:bg-dark-700/50 transition-colors duration-200 ease-out"
+        @click="showHistory = !showHistory"
+      >
+        <div class="flex items-center gap-2 text-base font-medium text-gray-700 dark:text-gray-200">
+          <div
+            i-carbon-time
+            class="text-primary-500 op-75"
+          />
           最近搜索
-        </h3>
-        <div class="flex flex-col gap-3">
-          <Skeleton v-if="dbLoading" :loading="true" :animation="true" :count="3" />
-          <transition-group v-else name="list" tag="div">
-            <WordDisplay
-              v-for="word in recentSearches"
-              :key="word.word"
-              :word="word"
-              mode="mini"
-              clickable
-              class="w-full"
-              @click="handleRecentSearch(word)"
-            />
-          </transition-group>
         </div>
+        <div
+          i-carbon-chevron-down
+          class="text-lg op-60 transition-transform duration-300 ease-out"
+          :class="showHistory ? 'rotate-180' : ''"
+        />
       </div>
+      <div
+        v-show="showHistory"
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 p-4 border-t border-gray-200/50 dark:border-dark-700/50"
+      >
+        <button
+          v-for="word in recentSearches"
+          :key="word.name"
+          class="px-4 py-2 rounded-lg text-sm text-left truncate bg-gray-100/60 dark:bg-dark-700/60 hover:(bg-gray-200/80 dark:bg-dark-600/80) transition-colors duration-200 ease-out shadow-sm transform hover:scale-102 active:scale-98"
+          @click="
+            () => {
+              searchQuery = word.name
+              searchWord()
+            }
+          "
+        >
+          {{ word.name }}
+        </button>
+      </div>
+    </div>
+
+    <div
+      v-if="dbLoading || loading"
+      class="pt-4"
+    >
+      <Skeleton
+        class="w-full p-6 rounded-2xl bg-white/30 dark:bg-dark-800/30 backdrop-blur-md shadow-xl shadow-gray-200/20 dark:shadow-black/20"
+      >
+        <Space vertical>
+          <div class="h-10 w-2/3 rounded-lg bg-gray-200 dark:bg-dark-700 animate-pulse" />
+          <div class="h-24 w-full rounded-lg bg-gray-200 dark:bg-dark-700 animate-pulse" />
+          <div class="h-14 w-4/5 rounded-lg bg-gray-200 dark:bg-dark-700 animate-pulse" />
+        </Space>
+      </Skeleton>
+    </div>
+
+    <EmptyDictionaryGuide
+      v-else-if="!dictionaryStore.isLoaded && !loading"
+      class="mt-8 p-6 rounded-2xl bg-white/30 dark:bg-dark-800/30 backdrop-blur-md shadow-xl shadow-gray-200/20 dark:shadow-black/20"
+    />
+
+    <div
+      v-else
+      class="pt-4"
+    >
+      <transition
+        name="fade-slide"
+        mode="out-in"
+        :key="animationKey"
+      >
+        <template v-if="activeTab === 'local'">
+          <WordDisplay
+            v-if="searchResult"
+            :word="searchResult"
+            class="p-6 rounded-2xl bg-white/30 dark:bg-dark-800/30 backdrop-blur-md shadow-xl shadow-gray-200/20 dark:shadow-black/20"
+          />
+          <div
+            v-else-if="!loading && searchQuery"
+            class="flex flex-col items-center justify-center py-16 text-gray-500 bg-white/30 dark:bg-dark-800/30 rounded-2xl shadow-xl backdrop-blur-md"
+          >
+            <div
+              i-carbon-search-locate
+              text-5xl
+              mb-6
+            />
+            <p class="text-lg font-medium">未找到相关单词</p>
+          </div>
+        </template>
+        <OnlineDictionary
+          v-else-if="activeTab === 'online'"
+          :query="searchQuery"
+          class="p-6 rounded-2xl bg-white/30 dark:bg-dark-800/30 backdrop-blur-md shadow-xl shadow-gray-200/20 dark:shadow-black/20"
+        />
+      </transition>
     </div>
   </div>
 </template>
 
 <style scoped>
-.search-input {
-  width: 100%;
-  border-radius: 0.75rem;
-  border: none;
-  background-color: rgb(255 255 255 / 0.1);
-  padding: 1rem;
-  padding-right: 3rem;
-  /* 为按钮留空间 */
-  font-size: 1.125rem;
-  box-shadow: 0 1px 1px 0 rgb(0 0 0 / 0.05);
-  outline: none;
-  backdrop-filter: blur(2px);
-  transition: all 0.3s ease;
+/* 定义淡入滑出动画 */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition:
+    opacity 0.4s ease-out,
+    transform 0.4s ease-out;
 }
 
-.search-button {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.05);
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.search-button:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.search-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.loading-icon {
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(0, 0, 0, 0.1);
-  border-top: 2px solid #3498db;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.search-input:focus,
-.search-input:hover {
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-}
-
-.search-input:focus {
-  border-color: rgb(209 213 219);
-}
-
-/* 骨架屏容器样式 */
-.skeleton-card {
-  border-radius: 12px;
-  padding: 1.5rem;
-  background-color: rgb(255 255 255 / 0.1);
-  backdrop-filter: blur(2px);
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-  width: 100%;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.fade-enter-from,
-.fade-leave-to {
+.fade-slide-enter-from {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(20px); /* 新元素从下方进入 */
 }
 
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.list-enter-from,
-.list-leave-to {
+.fade-slide-leave-to {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-20px); /* 旧元素向上方离开 */
 }
 </style>

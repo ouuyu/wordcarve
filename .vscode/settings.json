@@ -1,6 +1,13 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
+  "files.associations": {
+    "*.vue": "vue"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "css.validate": false,
   "[vue]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
