@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import MyFloatingMenu from '@/components/my/MyFloatingMenu.vue'
 import { useDictionaryStore } from './stores/dictionaryStore'
+import NaiveProvider from '@/components/NaiveProvider.vue'
+import NThemeConfig from '@/components/NThemeConfig.vue'
 
 const dictionaryStore = useDictionaryStore()
 
@@ -18,15 +19,19 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-theme-1 min-h-screen flex flex-col">
-    <!-- 主区域 -->
-    <main class="mx-auto max-w-1200px w-full flex-1 p-8">
-      <transition name="slide">
+  <NaiveProvider>
+    <div class="bg-theme-1 min-h-screen flex flex-col">
+      <!-- 主区域 -->
+      <main class="mx-auto max-w-1200px w-full flex-1 p-8">
         <router-view />
-      </transition>
-    </main>
-    <MyFloatingMenu />
-  </div>
+      </main>
+
+      <!-- 悬浮主题配置 -->
+      <div class="fixed bottom-6 right-6">
+        <NThemeConfig />
+      </div>
+    </div>
+  </NaiveProvider>
 </template>
 
 <style scoped>

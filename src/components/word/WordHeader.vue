@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
 import FrequencyIndicator from '@/components/dictionary/FrequencyIndicator.vue'
-import Button from '@/components/ui/Button.vue'
+import { NButton } from 'naive-ui'
 import { PronunciationType } from '@/utils/audio'
 
 defineProps<{
@@ -24,29 +24,37 @@ function playPronunciation(type: PronunciationType, event: MouseEvent) {
     <div class="mb-2 flex flex-wrap items-center">
       <span class="flex items-center break-all text-3xl font-bold">
         {{ word.word }}
-        <FrequencyIndicator v-if="frequencyLevel > 0" :level="frequencyLevel" class="ml-2" />
+        <FrequencyIndicator
+          v-if="frequencyLevel > 0"
+          :level="frequencyLevel"
+          class="ml-2"
+        />
       </span>
       <div class="flex flex-wrap items-center px-2">
         <span class="text-gray-600">
           {{ word.phonetic ? `/${word.phonetic}/` : '' }}
         </span>
         <div class="flex px-2">
-          <Button
-            type="text"
-            size="xs"
-            icon="carbon:audio"
-            @click="(e) => playPronunciation(PronunciationType.US, e)"
+          <NButton
+            text
+            size="small"
+            @click="e => playPronunciation(PronunciationType.US, e)"
           >
+            <template #icon>
+              <div class="i-carbon:audio"></div>
+            </template>
             美
-          </Button>
-          <Button
-            type="text"
-            size="xs"
-            icon="carbon:audio"
-            @click="(e) => playPronunciation(PronunciationType.UK, e)"
+          </NButton>
+          <NButton
+            text
+            size="small"
+            @click="e => playPronunciation(PronunciationType.UK, e)"
           >
+            <template #icon>
+              <div class="i-carbon:audio"></div>
+            </template>
             英
-          </Button>
+          </NButton>
         </div>
       </div>
     </div>

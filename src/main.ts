@@ -6,6 +6,9 @@ import { useThemeStore } from './stores/themeStore'
 import 'virtual:uno.css'
 import './style.css'
 
+import 'vfonts/Lato.css'
+import 'vfonts/FiraCode.css'
+
 const app = createApp(App)
 const pinia = createPinia()
 

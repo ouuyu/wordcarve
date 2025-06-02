@@ -1,42 +1,28 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import MyText from '@/components/my/MyText.vue'
-
-interface Definition {
-  part_of_speech: string
-  senses?: {
-    sense_number: string
-    sense_label: string
-    definition: {
-      Chinese: string
-      English: string
-    }
-    examples?: {
-      English: string
-      Chinese: string
-    }[]
-  }[]
-  definitions?: string[]
-}
-
-interface DictionaryEntry {
-  headword: string
-  definitions: {
-    权威英汉双解?: Definition[]
-    英汉?: Definition[]
-    英英?: Definition[]
-  }
-}
+import { OnlineDictionaryEntry, DictionarySource } from '@/types/dictionary'
+import {
+  NTabs,
+  NTabPane,
+  NCollapse,
+  NCollapseItem,
+  NIcon,
+  NText,
+  NTag,
+  NList,
+  NListItem,
+  NDivider,
+} from 'naive-ui'
 
 const props = defineProps<{
-  entry: DictionaryEntry
+  entry: OnlineDictionaryEntry
 }>()
 
-const expanded = ref<{ [key: string]: boolean }>({})
-const activeSource = ref<'权威英汉双解' | '英汉' | '英英'>('权威英汉双解')
+const expanded = ref<Record<string, boolean>>({})
+const activeSource = ref<DictionarySource>('权威英汉双解')
 
 const availableSources = computed(() => {
-  const sources = []
+  const sources: DictionarySource[] = []
   if (props.entry?.definitions?.['权威英汉双解']?.length) sources.push('权威英汉双解')
   if (props.entry?.definitions?.['英汉']?.length) sources.push('英汉')
   if (props.entry?.definitions?.['英英']?.length) sources.push('英英')
@@ -49,99 +35,108 @@ function toggleExample(key: string) {
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div>
     <!-- Dictionary Source Tabs -->
-    <div class="flex gap-2 border-b border-gray-100 dark:border-dark-700 -mx-2">
-      <button
+    <NTabs
+      v-model:value="activeSource"
+      type="segment"
+      size="small"
+      animated
+    >
+      <NTabPane
         v-for="source in availableSources"
         :key="source"
-        class="px-4 py-2 text-sm transition-colors relative"
-        :class="[
-          activeSource === source
-            ? 'text-primary font-medium'
-            : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200',
-        ]"
-        @click="activeSource = source"
+        :name="source"
       >
-        <span class="flex items-center gap-2">
-          <div
-            :class="{
-              'i-carbon-translate': source !== '英英',
-              'i-carbon-text-font': source === '英英',
-            }"
-          />
-          {{ source }}
-        </span>
-        <div
-          class="absolute bottom-0 left-0 right-0 h-0.5 rounded-t transition-colors"
-          :class="activeSource === source ? 'bg-primary' : 'bg-transparent'"
-        />
-      </button>
-    </div>
+        <template>
+          <div class="flex items-center gap-2">
+            <NIcon>
+              <div
+                :class="{
+                  'i-carbon-translate': source !== '英英',
+                  'i-carbon-text-font': source === '英英',
+                }"
+              />
+            </NIcon>
+            {{ source }}
+          </div>
+        </template>
+      </NTabPane>
+    </NTabs>
 
     <!-- Content -->
-    <div class="min-h-30">
+    <div class="dictionary-content mt-4">
       <!-- 权威英汉双解 -->
       <div v-if="activeSource === '权威英汉双解' && entry?.definitions?.['权威英汉双解']">
         <div
           v-for="def in entry.definitions['权威英汉双解']"
           :key="def.part_of_speech"
-          class="group"
+          class="mb-4"
         >
-          <div class="text-xs font-medium op-50 mb-1">{{ def.part_of_speech }}</div>
+          <NTag
+            size="small"
+            :bordered="false"
+            type="info"
+            class="mb-2"
+            >{{ def.part_of_speech }}</NTag
+          >
+
           <div
             v-for="sense in def.senses || []"
             :key="sense.sense_number"
-            class="pl-4 mb-3 last:mb-0"
+            class="pl-4 mb-3"
           >
-            <div class="flex items-baseline gap-2 mb-1">
-              <span class="text-primary font-mono text-sm">{{ sense.sense_number }}.</span>
-              <span class="font-medium">{{ sense.sense_label }}</span>
-            </div>
-            <div class="pl-4">
-              <p class="mb-1">
-                <span class="mr-2">{{ sense.definition.Chinese }}</span>
-                <MyText
-                  :text="sense.definition.English"
-                  class="text-sm op-60"
-                />
-              </p>
-              <div
-                v-if="sense.examples?.length"
-                class="relative"
+            <div class="flex items-baseline gap-2 mb-2">
+              <NText
+                type="primary"
+                class="font-mono"
+                >{{ sense.sense_number }}.</NText
               >
-                <button
-                  class="text-xs text-primary hover:text-primary-600 transition-colors flex items-center gap-1"
-                  @click="toggleExample(sense.sense_number)"
+              <NText strong>{{ sense.sense_label }}</NText>
+            </div>
+
+            <div class="pl-4">
+              <p class="mb-2">
+                <NText>{{ sense.definition.Chinese }}</NText>
+                <NText
+                  depth="3"
+                  class="ml-2 text-sm"
+                  >{{ sense.definition.English }}</NText
                 >
-                  <div
-                    i-carbon-chevron-right
-                    class="transition-transform"
-                    :class="expanded[sense.sense_number] ? 'rotate-90' : ''"
-                  />
-                  {{
-                    expanded[sense.sense_number] ? '收起例句' : `${sense.examples.length} 个例句`
-                  }}
-                </button>
-                <div
-                  v-show="expanded[sense.sense_number]"
-                  class="mt-2 space-y-2"
+              </p>
+
+              <NCollapse
+                v-if="sense.examples?.length"
+                :default-expanded-names="[]"
+              >
+                <NCollapseItem
+                  :title="`${sense.examples.length} 个例句`"
+                  :name="sense.sense_number"
                 >
-                  <div
-                    v-for="(example, index) in sense.examples"
-                    :key="index"
-                    class="pl-4 py-1 border-l-2 border-gray-100 dark:border-dark-700 group/example"
-                  >
-                    <MyText
-                      :text="example.English"
-                      class="block group-hover/example:text-primary transition-colors"
-                    />
-                    <div class="text-sm op-50 mt-0.5">{{ example.Chinese }}</div>
+                  <div class="space-y-3">
+                    <div
+                      v-for="(example, index) in sense.examples"
+                      :key="index"
+                      class="pl-3 py-1 border-l-2 border-gray-200 dark:border-gray-700"
+                    >
+                      <NText>{{ example.English }}</NText>
+                      <NText
+                        depth="3"
+                        class="block mt-1 text-sm"
+                        >{{ example.Chinese }}</NText
+                      >
+                    </div>
                   </div>
-                </div>
-              </div>
+                </NCollapseItem>
+              </NCollapse>
             </div>
           </div>
+          <NDivider
+            v-if="
+              def !==
+              entry.definitions['权威英汉双解'][entry.definitions['权威英汉双解'].length - 1]
+            "
+          />
         </div>
       </div>
 
@@ -150,18 +145,24 @@ function toggleExample(key: string) {
         <div
           v-for="def in entry.definitions['英汉']"
           :key="def.part_of_speech"
+          class="mb-4"
         >
-          <div class="text-xs font-medium op-50 mb-2">{{ def.part_of_speech }}</div>
-          <ul class="pl-4 space-y-1.5">
-            <li
+          <NTag
+            size="small"
+            :bordered="false"
+            type="info"
+            class="mb-2"
+            >{{ def.part_of_speech }}</NTag
+          >
+
+          <NList bordered>
+            <NListItem
               v-for="(definition, index) in def.definitions || []"
               :key="index"
-              class="flex items-baseline gap-2 group hover:text-primary transition-colors"
             >
-              <span class="w-1 h-1 rounded-full bg-current op-50 mt-1.5" />
-              <MyText :text="definition" />
-            </li>
-          </ul>
+              {{ definition }}
+            </NListItem>
+          </NList>
         </div>
       </div>
 
@@ -170,18 +171,24 @@ function toggleExample(key: string) {
         <div
           v-for="def in entry.definitions['英英']"
           :key="def.part_of_speech"
+          class="mb-4"
         >
-          <div class="text-xs font-medium op-50 mb-2">{{ def.part_of_speech }}</div>
-          <ul class="pl-4 space-y-1.5">
-            <li
+          <NTag
+            size="small"
+            :bordered="false"
+            type="info"
+            class="mb-2"
+            >{{ def.part_of_speech }}</NTag
+          >
+
+          <NList bordered>
+            <NListItem
               v-for="(definition, index) in def.definitions || []"
               :key="index"
-              class="flex items-baseline gap-2 group hover:text-primary transition-colors"
             >
-              <span class="w-1 h-1 rounded-full bg-current op-50 mt-1.5" />
-              <MyText :text="definition" />
-            </li>
-          </ul>
+              {{ definition }}
+            </NListItem>
+          </NList>
         </div>
       </div>
     </div>
@@ -189,5 +196,7 @@ function toggleExample(key: string) {
 </template>
 
 <style scoped>
-/* 移除所有样式，全部使用 UnoCSS */
+.dictionary-content {
+  min-height: 100px;
+}
 </style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Button, Modal } from '@/components/ui'
+import { NButton, NModal } from 'naive-ui'
 import { Message } from '@/utils/message'
 import { useDictionaryStore } from '@/stores/dictionaryStore'
 import DictionaryCard from '@/components/settings/DictionaryCard.vue'
@@ -41,13 +41,13 @@ async function clearDictionary() {
         title="下载字典"
         description="从网络下载预设词库"
       >
-        <Button
-          type="outline"
-          size="sm"
+        <NButton
+          ghost
+          size="small"
           @click="showDownloader = true"
         >
           打开下载管理
-        </Button>
+        </NButton>
       </DictionaryCard>
 
       <!-- 清空字典 -->
@@ -56,36 +56,39 @@ async function clearDictionary() {
         title="清空字典"
         description="删除所有词条"
       >
-        <Button
-          type="outline"
-          size="sm"
+        <NButton
+          ghost
+          size="small"
           :disabled="!dictionaryStore.dictionary.length"
           @click="showConfirm = true"
         >
           清空词库
-        </Button>
+        </NButton>
       </DictionaryCard>
     </div>
 
     <!-- 字典下载弹出框 -->
-    <Modal
-      v-model:visible="showDownloader"
+    <NModal
+      v-model:show="showDownloader"
       title="字典下载管理"
-      :footer="false"
+      preset="card"
       :mask-closable="true"
-      :width="isMobile ? '95%' : '800px'"
+      :style="{ width: isMobile ? '95%' : '800px' }"
     >
       <DictionaryDownloader @close="showDownloader = false" />
-    </Modal>
+    </NModal>
 
     <!-- 确认弹窗 -->
-    <Modal
-      v-model:visible="showConfirm"
+    <NModal
+      v-model:show="showConfirm"
       title="确认操作"
-      @ok="clearDictionary"
-      @cancel="showConfirm = false"
+      preset="dialog"
+      positive-text="确认"
+      negative-text="取消"
+      @positive-click="clearDictionary"
+      @negative-click="showConfirm = false"
     >
       <p>确定要清空字典吗？此操作不可撤销。</p>
-    </Modal>
+    </NModal>
   </div>
 </template>

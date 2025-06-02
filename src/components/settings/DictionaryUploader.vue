@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Button } from '@/components/ui'
+import { NButton } from 'naive-ui'
 import { Message } from '@/utils/message'
 import { useDictionaryStore } from '../../stores/dictionaryStore'
 
@@ -83,15 +83,17 @@ function readFileAsText(file: File): Promise<string> {
       class="hidden"
       @change="handleFileUpload"
     />
-    <Button
-      type="outline"
-      size="sm"
+    <NButton
+      ghost
+      size="small"
       :loading="uploading"
       :disabled="uploading"
-      icon="carbon:upload"
       @click="triggerFileInput"
     >
+      <template #icon>
+        <div class="i-carbon:upload"></div>
+      </template>
       选择文件
-    </Button>
+    </NButton>
   </div>
 </template>

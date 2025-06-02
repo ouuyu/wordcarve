@@ -1,70 +1,148 @@
 <script setup lang="ts">
+import { NCard, NTag, NSpace, NText, NDivider, NIcon } from 'naive-ui'
 import MyText from '@/components/my/MyText.vue'
+
 const props = defineProps<{ synonyms: any[]; antonyms: any[] }>()
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="synonym-container">
     <!-- Synonyms -->
     <div
       v-if="synonyms?.length"
-      class="space-y-4"
+      class="mb-5"
     >
-      <div class="flex items-center gap-2 text-base font-medium">
-        <div i-carbon-arrow-right />
-        同义词
+      <div class="section-header flex items-center gap-2 mb-3">
+        <NIcon
+          size="20"
+          color="#0e7a0d"
+        >
+          <div i-carbon-arrow-right />
+        </NIcon>
+        <NText
+          type="success"
+          strong
+          >同义词</NText
+        >
       </div>
-      <div
-        v-for="syn in synonyms"
-        :key="syn.part_of_speech"
-        class="p-4 rounded-lg bg-gray-50 dark:bg-dark-700/50 space-y-2"
+
+      <NSpace
+        vertical
+        :size="12"
       >
-        <div class="text-sm italic op-50">
-          <MyText :text="syn.part_of_speech" />
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <span
-            v-for="item in syn.items"
-            :key="item"
-            class="px-3 py-1.5 rounded-full text-sm cursor-pointer bg-blue-50 text-blue-700 hover:bg-blue-100 dark:(bg-blue-500/10 text-blue-300 hover:bg-blue-500/20) transition-colors"
+        <NCard
+          v-for="syn in synonyms"
+          :key="syn.part_of_speech"
+          size="small"
+          class="synonym-card"
+        >
+          <template #header>
+            <NText
+              italic
+              depth="3"
+              class="text-sm"
+            >
+              <MyText :text="syn.part_of_speech" />
+            </NText>
+          </template>
+
+          <NSpace
+            :size="8"
+            wrap
           >
-            <MyText :text="item" />
-          </span>
-        </div>
-      </div>
+            <NTag
+              v-for="item in syn.items"
+              :key="item"
+              type="success"
+              round
+              class="word-tag"
+            >
+              <MyText :text="item" />
+            </NTag>
+          </NSpace>
+        </NCard>
+      </NSpace>
     </div>
+
+    <NDivider v-if="synonyms?.length && antonyms?.length" />
 
     <!-- Antonyms -->
     <div
       v-if="antonyms?.length"
-      class="space-y-4"
+      class="mt-5"
     >
-      <div class="flex items-center gap-2 text-base font-medium">
-        <div i-carbon-arrow-left />
-        反义词
+      <div class="section-header flex items-center gap-2 mb-3">
+        <NIcon
+          size="20"
+          color="#d03050"
+        >
+          <div i-carbon-arrow-left />
+        </NIcon>
+        <NText
+          type="error"
+          strong
+          >反义词</NText
+        >
       </div>
-      <div
-        v-for="ant in antonyms"
-        :key="ant.part_of_speech"
-        class="p-4 rounded-lg bg-gray-50 dark:bg-dark-700/50 space-y-2"
+
+      <NSpace
+        vertical
+        :size="12"
       >
-        <div class="text-sm italic op-50">
-          <MyText :text="ant.part_of_speech" />
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <span
-            v-for="item in ant.items"
-            :key="item"
-            class="px-3 py-1.5 rounded-full text-sm cursor-pointer bg-red-50 text-red-700 hover:bg-red-100 dark:(bg-red-500/10 text-red-300 hover:bg-red-500/20) transition-colors"
+        <NCard
+          v-for="ant in antonyms"
+          :key="ant.part_of_speech"
+          size="small"
+          class="antonym-card"
+        >
+          <template #header>
+            <NText
+              italic
+              depth="3"
+              class="text-sm"
+            >
+              <MyText :text="ant.part_of_speech" />
+            </NText>
+          </template>
+
+          <NSpace
+            :size="8"
+            wrap
           >
-            <MyText :text="item" />
-          </span>
-        </div>
-      </div>
+            <NTag
+              v-for="item in ant.items"
+              :key="item"
+              type="error"
+              round
+              class="word-tag"
+            >
+              <MyText :text="item" />
+            </NTag>
+          </NSpace>
+        </NCard>
+      </NSpace>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* 移除所有样式，全部使用 UnoCSS */
+.synonym-card,
+.antonym-card {
+  background-color: #f9f9fb;
+  transition: all 0.2s ease;
+}
+
+.word-tag {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.section-header {
+  margin-bottom: 12px;
+}
+
+:deep(.dark) .synonym-card,
+:deep(.dark) .antonym-card {
+  background-color: rgba(30, 30, 46, 0.6);
+}
 </style>

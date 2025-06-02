@@ -3,7 +3,7 @@ import type { DictionaryEntry } from '@/types'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import EmptyDictionaryGuide from '@/components/dictionary/EmptyDictionaryGuide.vue'
-import { Skeleton, SkeletonLine, Space } from '@/components/ui' // 假设这些组件支持 class 传递
+import { NSkeleton, NSpace } from 'naive-ui' // 替换为naive-ui组件
 import WordDisplay from '@/components/word/WordDisplay.vue'
 import OnlineDictionary from '@/components/dictionary/OnlineDictionary.vue'
 import { useDictionaryStore } from '@/stores/dictionaryStore'
@@ -152,138 +152,129 @@ function toggleTab() {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto px-4 py-8 space-y-6 font-sans text-gray-800 dark:text-gray-100">
+  <div class="max-w-4xl mx-auto px-4 py-6 space-y-5">
+    <!-- 搜索区域 -->
     <div class="space-y-4">
-      <div class="flex gap-3">
-        <div class="flex-1 relative group">
+      <!-- 搜索框 -->
+      <div class="flex gap-2">
+        <div class="flex-1 relative">
           <div
-            class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400 dark:text-gray-500"
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400/80 dark:text-gray-500/80"
           >
             <div
               i-carbon-search
-              text-xl
+              text-lg
             />
           </div>
           <input
             ref="searchInputRef"
             v-model="searchQuery"
             type="text"
-            class="w-full pl-12 pr-6 py-3.5 text-lg rounded-2xl bg-white/40 dark:bg-dark-800/40 backdrop-blur-md border border-gray-200 dark:border-dark-700 shadow-xl shadow-gray-200/20 dark:shadow-black/20 hover:bg-white/60 dark:hover:bg-dark-700/60 focus:(bg-white dark:bg-dark-900 border-primary-500 ring-4 ring-primary-500/15) outline-none transition-all duration-300 ease-in-out"
-            :placeholder="'搜索单词...'"
+            class="w-full h-12 pl-10 pr-4 text-base rounded-lg bg-white/80 dark:bg-dark-800/80 backdrop-blur-sm border border-gray-200/80 dark:border-dark-700/80 shadow-sm hover:bg-white dark:hover:bg-dark-700 focus:(ring-2 ring-primary-500/30 border-primary-500) outline-none transition duration-200"
+            placeholder="搜索单词..."
             @keyup.enter="searchWord"
           />
         </div>
         <button
-          class="px-7 rounded-2xl bg-gradient-to-r from-primary-500 to-primary-600 text-white text-lg font-semibold shadow-lg shadow-primary-500/30 hover:from-primary-600 hover:to-primary-700 active:scale-98 transition-all duration-300 ease-out transform"
+          class="h-12 px-5 rounded-lg bg-primary text-white font-medium shadow-sm hover:bg-primary-600 active:bg-primary-700 transition duration-200"
           @click="searchWord"
         >
-          <div
-            i-carbon-search
-            text-xl
-          />
+          <div i-carbon-search />
         </button>
       </div>
 
-      <div
-        class="flex p-1.5 gap-2 rounded-2xl bg-white/30 dark:bg-dark-800/30 backdrop-blur-md shadow-inner shadow-gray-200/20 dark:shadow-black/20"
-      >
+      <!-- 标签页切换 -->
+      <div class="flex rounded-lg bg-gray-100/80 dark:bg-dark-800/80 p-1">
         <button
-          class="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-base font-medium transition-all duration-300 ease-in-out transform hover:scale-102 active:scale-98"
+          class="flex-1 flex items-center justify-center gap-1.5 h-10 rounded-md font-medium transition duration-200"
           :class="[
             activeTab === 'local'
-              ? 'text-primary-700 dark:text-primary-300 bg-white dark:bg-dark-700 shadow-md shadow-gray-300/30 dark:shadow-black/30'
-              : 'text-gray-600 dark:text-gray-400 hover:(text-primary-600 dark:text-primary-400 bg-white/50 dark:bg-dark-700/50)',
+              ? 'bg-white dark:bg-dark-700 text-primary-600 dark:text-primary-400 shadow-sm'
+              : 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-dark-700/50',
           ]"
           @click="activeTab = 'local'"
         >
-          <div
-            i-carbon-book
-            text-lg
-          />
+          <div i-carbon-book />
           本地词典
         </button>
         <button
-          class="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-base font-medium transition-all duration-300 ease-in-out transform hover:scale-102 active:scale-98"
+          class="flex-1 flex items-center justify-center gap-1.5 h-10 rounded-md font-medium transition duration-200"
           :class="[
             activeTab === 'online'
-              ? 'text-primary-700 dark:text-primary-300 bg-white dark:bg-dark-700 shadow-md shadow-gray-300/30 dark:shadow-black/30'
-              : 'text-gray-600 dark:text-gray-400 hover:(text-primary-600 dark:text-primary-400 bg-white/50 dark:bg-dark-700/50)',
+              ? 'bg-white dark:bg-dark-700 text-primary-600 dark:text-primary-400 shadow-sm'
+              : 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-dark-700/50',
           ]"
           @click="activeTab = 'online'"
         >
-          <div
-            i-carbon-cloud
-            text-lg
-          />
+          <div i-carbon-cloud />
           在线词典
         </button>
       </div>
     </div>
 
+    <!-- 最近搜索历史 -->
     <div
       v-if="recentSearches.length > 0"
-      class="rounded-2xl overflow-hidden bg-white/30 dark:bg-dark-800/30 backdrop-blur-md shadow-xl shadow-gray-200/20 dark:shadow-black/20"
+      class="rounded-lg bg-white/80 dark:bg-dark-800/80 backdrop-blur-sm shadow-sm border border-gray-100/80 dark:border-dark-700/80 overflow-hidden"
     >
       <div
-        class="flex items-center justify-between px-5 py-3.5 cursor-pointer hover:bg-white/50 dark:hover:bg-dark-700/50 transition-colors duration-200 ease-out"
+        class="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700/50 transition duration-200"
         @click="showHistory = !showHistory"
       >
-        <div class="flex items-center gap-2 text-base font-medium text-gray-700 dark:text-gray-200">
+        <div class="flex items-center gap-1.5 text-sm font-medium">
           <div
             i-carbon-time
-            class="text-primary-500 op-75"
+            class="text-primary-500/80"
           />
           最近搜索
         </div>
         <div
           i-carbon-chevron-down
-          class="text-lg op-60 transition-transform duration-300 ease-out"
+          class="text-gray-400 dark:text-gray-500 transition duration-200"
           :class="showHistory ? 'rotate-180' : ''"
         />
       </div>
       <div
         v-show="showHistory"
-        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 p-4 border-t border-gray-200/50 dark:border-dark-700/50"
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 p-3 border-t border-gray-100/80 dark:border-dark-700/80"
       >
         <button
           v-for="word in recentSearches"
-          :key="word.name"
-          class="px-4 py-2 rounded-lg text-sm text-left truncate bg-gray-100/60 dark:bg-dark-700/60 hover:(bg-gray-200/80 dark:bg-dark-600/80) transition-colors duration-200 ease-out shadow-sm transform hover:scale-102 active:scale-98"
-          @click="
-            () => {
-              searchQuery = word.name
-              searchWord()
-            }
-          "
+          :key="word.word"
+          class="px-3 py-2 rounded-md bg-gray-50 dark:bg-dark-700/50 hover:bg-gray-100 dark:hover:bg-dark-600/50 text-sm text-left truncate transition duration-200"
+          @click="handleRecentSearch(word)"
         >
-          {{ word.name }}
+          {{ word.word }}
         </button>
       </div>
     </div>
 
+    <!-- 加载状态 -->
     <div
       v-if="dbLoading || loading"
-      class="pt-4"
+      class="pt-2"
     >
-      <Skeleton
-        class="w-full p-6 rounded-2xl bg-white/30 dark:bg-dark-800/30 backdrop-blur-md shadow-xl shadow-gray-200/20 dark:shadow-black/20"
+      <NSkeleton
+        class="w-full p-5 rounded-lg bg-white/80 dark:bg-dark-800/80 backdrop-blur-sm shadow-sm"
       >
-        <Space vertical>
-          <div class="h-10 w-2/3 rounded-lg bg-gray-200 dark:bg-dark-700 animate-pulse" />
-          <div class="h-24 w-full rounded-lg bg-gray-200 dark:bg-dark-700 animate-pulse" />
-          <div class="h-14 w-4/5 rounded-lg bg-gray-200 dark:bg-dark-700 animate-pulse" />
-        </Space>
-      </Skeleton>
+        <NSpace vertical>
+          <div class="h-8 w-2/3 rounded bg-gray-100 dark:bg-dark-700/80 animate-pulse" />
+          <div class="h-20 w-full rounded bg-gray-100 dark:bg-dark-700/80 animate-pulse" />
+          <div class="h-12 w-4/5 rounded bg-gray-100 dark:bg-dark-700/80 animate-pulse" />
+        </NSpace>
+      </NSkeleton>
     </div>
 
+    <!-- 空词典提示 -->
     <EmptyDictionaryGuide
       v-else-if="!dictionaryStore.isLoaded && !loading"
-      class="mt-8 p-6 rounded-2xl bg-white/30 dark:bg-dark-800/30 backdrop-blur-md shadow-xl shadow-gray-200/20 dark:shadow-black/20"
+      class="mt-6 p-5 rounded-lg bg-white/80 dark:bg-dark-800/80 backdrop-blur-sm shadow-sm"
     />
 
+    <!-- 搜索结果 -->
     <div
       v-else
-      class="pt-4"
+      class="pt-2"
     >
       <transition
         name="fade-slide"
@@ -294,24 +285,25 @@ function toggleTab() {
           <WordDisplay
             v-if="searchResult"
             :word="searchResult"
-            class="p-6 rounded-2xl bg-white/30 dark:bg-dark-800/30 backdrop-blur-md shadow-xl shadow-gray-200/20 dark:shadow-black/20"
+            class="p-5 rounded-lg bg-white/80 dark:bg-dark-800/80 backdrop-blur-sm shadow-sm border border-gray-100/80 dark:border-dark-700/80"
           />
           <div
             v-else-if="!loading && searchQuery"
-            class="flex flex-col items-center justify-center py-16 text-gray-500 bg-white/30 dark:bg-dark-800/30 rounded-2xl shadow-xl backdrop-blur-md"
+            class="flex flex-col items-center justify-center py-12 rounded-lg bg-white/80 dark:bg-dark-800/80 backdrop-blur-sm shadow-sm"
           >
             <div
               i-carbon-search-locate
-              text-5xl
-              mb-6
+              text-4xl
+              mb-4
+              class="text-gray-400 dark:text-gray-500"
             />
-            <p class="text-lg font-medium">未找到相关单词</p>
+            <p class="text-base text-gray-500 dark:text-gray-400">未找到相关单词</p>
           </div>
         </template>
         <OnlineDictionary
           v-else-if="activeTab === 'online'"
           :query="searchQuery"
-          class="p-6 rounded-2xl bg-white/30 dark:bg-dark-800/30 backdrop-blur-md shadow-xl shadow-gray-200/20 dark:shadow-black/20"
+          class="p-5 rounded-lg bg-white/80 dark:bg-dark-800/80 backdrop-blur-sm shadow-sm border border-gray-100/80 dark:border-dark-700/80"
         />
       </transition>
     </div>
@@ -319,21 +311,20 @@ function toggleTab() {
 </template>
 
 <style scoped>
-/* 定义淡入滑出动画 */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition:
-    opacity 0.4s ease-out,
-    transform 0.4s ease-out;
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .fade-slide-enter-from {
   opacity: 0;
-  transform: translateY(20px); /* 新元素从下方进入 */
+  transform: translateY(12px);
 }
 
 .fade-slide-leave-to {
   opacity: 0;
-  transform: translateY(-20px); /* 旧元素向上方离开 */
+  transform: translateY(-12px);
 }
 </style>

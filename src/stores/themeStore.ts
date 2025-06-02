@@ -102,6 +102,11 @@ export const useThemeStore = defineStore('theme', () => {
     applyTheme(currentTheme.value)
   }
 
+  // 获取当前主题的颜色
+  function getCurrentThemeColors() {
+    return themeColors[currentTheme.value]
+  }
+
   // 监听主题变化
   watch(
     currentTheme,
@@ -116,5 +121,6 @@ export const useThemeStore = defineStore('theme', () => {
     availableThemes,
     setTheme,
     initTheme,
+    getCurrentThemeColors,
   }
 })

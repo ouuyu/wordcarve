@@ -1,206 +1,222 @@
 <script setup lang="ts">
-import { PropType } from 'vue'
-import MyText from '@/components/my/MyText.vue'
+import { ref } from 'vue'
+import { OnlineDictionaryEntry, ExternalDictionary } from '@/types/dictionary'
+import { wordFormMapping, getTagDisplay } from '@/services/dictionary'
+import { NCard, NTabs, NTabPane, NTag, NSpace, NButton, NDivider, NBadge, NTooltip } from 'naive-ui'
 import FrequencyIndicator from '@/components/dictionary/FrequencyIndicator.vue'
-import WordTags from '@/components/word/WordTags.vue'
 import OnlineDictDefinitions from '@/components/dictionary/onlineDict/OnlineDictDefinitions.vue'
 import OnlineDictCollocations from '@/components/dictionary/onlineDict/OnlineDictCollocations.vue'
 import OnlineDictSynAnt from '@/components/dictionary/onlineDict/OnlineDictSynAnt.vue'
 
-interface WordForm {
-  type: string
-  form: string
+const props = defineProps<{
+  entry: OnlineDictionaryEntry
+  frequencyLevel: number
+  playPronunciation: (word: string, type: 'US' | 'UK') => void
+  openExternalDictionary: (url: string, word: string) => void
+}>()
+
+const activeTab = ref<'definitions' | 'collocations' | 'synonyms'>('definitions')
+
+// 外部词典链接
+const externalDictionaries: ExternalDictionary[] = [
+  {
+    name: '剑桥词典',
+    url: 'https://dictionary.cambridge.org/dictionary/english/',
+    icon: 'i-carbon-book',
+  },
+  {
+    name: '柯林斯词典',
+    url: 'https://www.collinsdictionary.com/dictionary/english/',
+    icon: 'i-carbon-translate',
+  },
+]
+
+const handlePlayPronunciation = (type: 'US' | 'UK', event?: Event) => {
+  if (event) event.stopPropagation()
+  props.playPronunciation(props.entry.headword, type)
 }
 
-interface Pronunciation {
-  US: string
-  UK: string
+const handleOpenExternalDictionary = (url: string) => {
+  props.openExternalDictionary(url, props.entry.headword)
 }
-
-interface DictionaryEntry {
-  headword: string
-  pronunciations: Pronunciation
-  tags?: string[]
-  wordForms?: WordForm[]
-  collocations?: any[]
-  synonyms?: any[]
-  antonyms?: any[]
-  definitions?: any
-}
-
-defineProps({
-  entry: {
-    type: Object as PropType<DictionaryEntry>,
-    required: true,
-  },
-  frequencyLevel: {
-    type: Number,
-    required: true,
-  },
-  wordFormMapping: {
-    type: Object as PropType<Record<string, string>>,
-    required: true,
-  },
-  externalDictionaries: {
-    type: Array as PropType<any[]>,
-    required: true,
-  },
-  getTagDisplay: {
-    type: Function as PropType<(tag: string) => string>,
-    required: true,
-  },
-  playPronunciation: {
-    type: Function as PropType<(word: string, type: 'US' | 'UK') => void>,
-    required: true,
-  },
-  openExternalDictionary: {
-    type: Function as PropType<(url: string) => void>,
-    required: true,
-  },
-})
 </script>
 
 <template>
-  <div class="p-4 bg-white dark:bg-dark-800 rounded-xl shadow-sm space-y-4">
-    <!-- Headword and Pronunciation -->
-    <div class="flex items-start justify-between gap-4">
-      <div class="space-y-2 flex-1">
-        <div class="flex items-center gap-3">
-          <h2 class="text-2xl font-semibold tracking-tight">
-            <MyText :text="entry.headword" />
-          </h2>
-          <FrequencyIndicator
-            v-if="frequencyLevel > 0"
-            :level="frequencyLevel"
-            class="transform scale-110"
-          />
-          <!-- Word Tags -->
-          <div
-            v-if="entry.tags?.length"
-            class="flex flex-wrap gap-1.5"
-          >
-            <WordTags
-              :word="{
-                word: entry.headword,
-                phonetic: '',
-                definition: [],
-                translation: [],
-                pos: {},
-                tag: entry.tags,
-              }"
-              :get-tag-display="getTagDisplay"
-            />
-          </div>
-        </div>
-        <div class="flex items-center gap-4 text-sm">
-          <div class="flex items-center gap-3">
-            <span class="flex items-center gap-1.5">
-              <span class="font-medium op-50">US</span>
-              <MyText
-                :text="entry.pronunciations?.US"
-                class="font-mono"
-              />
-              <button
-                v-if="entry.pronunciations?.US"
-                class="inline-flex items-center justify-center w-6 h-6 rounded-full hover:bg-primary/10 active:bg-primary/20 text-primary transition-colors"
-                title="美式发音"
-                @click="() => playPronunciation(entry.headword, 'US')"
-              >
-                <div i-carbon-volume-up />
-              </button>
-            </span>
-            <span class="flex items-center gap-1.5">
-              <span class="font-medium op-50">UK</span>
-              <MyText
-                :text="entry.pronunciations?.UK"
-                class="font-mono"
-              />
-              <button
-                v-if="entry.pronunciations?.UK"
-                class="inline-flex items-center justify-center w-6 h-6 rounded-full hover:bg-primary/10 active:bg-primary/20 text-primary transition-colors"
-                title="英式发音"
-                @click="() => playPronunciation(entry.headword, 'UK')"
-              >
-                <div i-carbon-volume-up />
-              </button>
-            </span>
-          </div>
-          <!-- External Dictionary Links -->
-          <div class="flex items-center gap-1.5">
-            <button
-              v-for="dict in externalDictionaries"
-              :key="dict.name"
-              class="inline-flex items-center gap-1 px-2 py-1 text-xs rounded bg-gray-50 hover:bg-gray-100 dark:bg-dark-700/50 dark:hover:bg-dark-600/50 transition-colors"
-              @click="() => openExternalDictionary(dict.url + entry.headword)"
-            >
-              <div :class="[dict.icon, 'text-base op-60']" />
-              <span class="hidden sm:inline">{{ dict.name }}</span>
-            </button>
-          </div>
+  <NCard
+    class="dict-entry-card"
+    hoverable
+  >
+    <!-- 单词头部信息 -->
+    <div class="dict-header">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-xl font-bold">{{ entry.headword }}</h2>
+        <div v-if="entry.frequency">
+          <FrequencyIndicator :level="frequencyLevel" />
         </div>
       </div>
-    </div>
 
-    <!-- Word Forms -->
-    <div
-      v-if="entry.wordForms?.length"
-      class="flex flex-wrap items-center gap-x-4 gap-y-1 py-2 px-3 text-sm bg-gray-50 dark:bg-dark-700/50 rounded-lg"
-    >
-      <div class="flex items-center gap-1.5 text-primary">
-        <div i-carbon-text-font />
-        <span class="font-medium">词形变化</span>
-      </div>
-      <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <span
-          v-for="form in entry.wordForms"
-          :key="form.type"
-          class="flex items-center gap-1.5"
+      <!-- 音标和发音 -->
+      <NSpace
+        class="mb-3"
+        align="center"
+        :size="12"
+      >
+        <NSpace
+          v-if="entry.pronunciations?.UK"
+          align="center"
+          :size="6"
         >
-          <span class="text-xs op-50">{{ wordFormMapping[form.type] || form.type }}</span>
+          <NTag
+            size="small"
+            type="info"
+            round
+            >英</NTag
+          >
+          <span class="font-mono text-sm">/ {{ entry.pronunciations.UK }} /</span>
+          <NTooltip>
+            <template #trigger>
+              <NButton
+                quaternary
+                circle
+                size="small"
+                @click="e => handlePlayPronunciation('UK', e)"
+              >
+                <div i-carbon-volume-up />
+              </NButton>
+            </template>
+            播放英式发音
+          </NTooltip>
+        </NSpace>
+
+        <NSpace
+          v-if="entry.pronunciations?.US"
+          align="center"
+          :size="6"
+        >
+          <NTag
+            size="small"
+            type="error"
+            round
+            >美</NTag
+          >
+          <span class="font-mono text-sm">/ {{ entry.pronunciations.US }} /</span>
+          <NTooltip>
+            <template #trigger>
+              <NButton
+                quaternary
+                circle
+                size="small"
+                @click="e => handlePlayPronunciation('US', e)"
+              >
+                <div i-carbon-volume-up />
+              </NButton>
+            </template>
+            播放美式发音
+          </NTooltip>
+        </NSpace>
+      </NSpace>
+
+      <!-- 标签 -->
+      <NSpace
+        v-if="entry.tags && entry.tags.length > 0"
+        :size="[8, 4]"
+        wrap
+      >
+        <NTag
+          v-for="tag in entry.tags"
+          :key="tag"
+          size="small"
+          round
+        >
+          {{ getTagDisplay(tag) }}
+        </NTag>
+      </NSpace>
+
+      <!-- 词形变化 -->
+      <NSpace
+        v-if="entry.wordForms && entry.wordForms.length > 0"
+        class="my-2"
+        wrap
+        :size="[12, 8]"
+      >
+        <NSpace
+          v-for="(form, i) in entry.wordForms"
+          :key="i"
+          :size="4"
+          align="center"
+        >
+          <span class="text-xs text-gray-500">
+            {{ wordFormMapping[form.type] || form.type }}:
+          </span>
           <span class="font-medium">{{ form.form }}</span>
-        </span>
-      </div>
+        </NSpace>
+      </NSpace>
+
+      <NDivider class="my-3" />
+
+      <!-- 外部词典链接 -->
+      <NSpace
+        wrap
+        :size="8"
+      >
+        <NButton
+          v-for="dict in externalDictionaries"
+          :key="dict.name"
+          size="small"
+          secondary
+          @click="handleOpenExternalDictionary(dict.url)"
+        >
+          <template #icon>
+            <div :class="dict.icon" />
+          </template>
+          {{ dict.name }}
+        </NButton>
+      </NSpace>
     </div>
 
-    <!-- Definitions Section -->
-    <div
-      v-if="entry.definitions"
-      class="pt-2"
+    <!-- 内容标签页 -->
+    <NTabs
+      v-model:value="activeTab"
+      type="line"
+      class="mt-4"
+      animated
     >
-      <OnlineDictDefinitions :entry="entry" />
-    </div>
+      <NTabPane
+        name="definitions"
+        tab="释义与例句"
+      >
+        <OnlineDictDefinitions :entry="entry" />
+      </NTabPane>
 
-    <!-- Collocations Section -->
-    <div
-      v-if="entry.collocations?.length"
-      class="pt-3 border-t border-gray-100 dark:border-dark-700"
-    >
-      <div class="flex items-center gap-2 text-base font-medium mb-3">
-        <div i-carbon-connection />
-        常用搭配
-      </div>
+      <NTabPane
+        v-if="entry.collocations?.length"
+        name="collocations"
+        tab="搭配"
+      >
+        <OnlineDictCollocations :collocations="entry.collocations" />
+      </NTabPane>
 
-      <OnlineDictCollocations :collocations="entry.collocations" />
-    </div>
-
-    <!-- Synonyms & Antonyms Section -->
-    <div
-      v-if="entry.synonyms?.length || entry.antonyms?.length"
-      class="pt-3 border-t border-gray-100 dark:border-dark-700"
-    >
-      <div class="flex items-center gap-2 text-base font-medium mb-3">
-        <div i-carbon-compare />
-        同反义词
-      </div>
-
-      <OnlineDictSynAnt
-        :synonyms="entry.synonyms || []"
-        :antonyms="entry.antonyms || []"
-      />
-    </div>
-  </div>
+      <NTabPane
+        v-if="entry.synonyms?.length || entry.antonyms?.length"
+        name="synonyms"
+        tab="同反义词"
+      >
+        <OnlineDictSynAnt
+          :synonyms="entry.synonyms"
+          :antonyms="entry.antonyms"
+        />
+      </NTabPane>
+    </NTabs>
+  </NCard>
 </template>
 
 <style scoped>
-/* 移除所有样式，全部使用 UnoCSS */
+.dict-entry-card {
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.dict-header {
+  padding-bottom: 8px;
+}
 </style>

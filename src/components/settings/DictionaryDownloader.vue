@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import { Button, Input, Modal } from '@/components/ui'
+import { NButton, NInput, NModal } from 'naive-ui'
 import { Message } from '@/utils/message'
 import { useDictionaryStore } from '../../stores/dictionaryStore'
 
@@ -143,12 +143,12 @@ function cancelDownload() {
 <template>
   <div class="p-4">
     <!-- 下载进度模态框 -->
-    <Modal
-      v-model:visible="downloadStatus.isDownloading"
+    <NModal
+      v-model:show="downloadStatus.isDownloading"
       title="下载进度"
-      :footer="false"
+      preset="card"
       :mask-closable="false"
-      :width="isMobile ? '95%' : '500px'"
+      :style="{ width: isMobile ? '95%' : '500px' }"
     >
       <div class="flex flex-col items-center justify-center p-6">
         <div class="i-svg-spinners:270-ring-with-bg h-10 w-10 text-blue-500" />
@@ -158,15 +158,15 @@ function cancelDownload() {
             {{ downloadStatus.isDownloading ? `速度: ${downloadStatus.speed}` : '/' }}
           </div>
         </div>
-        <Button
+        <NButton
           class="mt-4"
-          type="danger"
+          type="error"
           @click="cancelDownload"
         >
           取消下载
-        </Button>
+        </NButton>
       </div>
-    </Modal>
+    </NModal>
 
     <div
       v-if="downloadStatus.error"
@@ -195,15 +195,17 @@ function cancelDownload() {
           <div class="mb-3 break-all text-xs text-gray-400">
             {{ dict.url }}
           </div>
-          <Button
+          <NButton
             type="primary"
-            size="sm"
+            size="small"
             :disabled="downloadStatus.isDownloading"
-            icon="carbon:download"
             @click="downloadDictionary(dict.url, dict.name)"
           >
+            <template #icon>
+              <div class="i-carbon:download"></div>
+            </template>
             下载
-          </Button>
+          </NButton>
         </div>
       </div>
     </div>
@@ -214,19 +216,19 @@ function cancelDownload() {
 
     <div class="flex flex-col space-y-4">
       <div class="flex space-x-2">
-        <Input
-          v-model="customUrl"
+        <NInput
+          v-model:value="customUrl"
           placeholder="输入JSON词库URL"
           :disabled="downloadStatus.isDownloading"
           class="flex-grow"
         />
-        <Button
+        <NButton
           type="primary"
           :disabled="!customUrl || downloadStatus.isDownloading"
           @click="downloadCustomUrl"
         >
           下载
-        </Button>
+        </NButton>
       </div>
       <p class="text-xs text-gray-500">请确保URL指向有效的JSON词库文件, 格式需与系统兼容</p>
     </div>
