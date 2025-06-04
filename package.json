@@ -7,8 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview",
-    "prepare": "husky"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@prettier/plugin-xml": "^3.4.1",
@@ -32,7 +31,6 @@
     "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.0",
-    "husky": "9.1.7",
     "less": "^4.3.0",
     "lint-staged": "16.0.0",
     "prettier": "^3.5.3",

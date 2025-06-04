@@ -2,7 +2,7 @@
 import { onMounted } from 'vue'
 import { useDictionaryStore } from './stores/dictionaryStore'
 import NaiveProvider from '@/components/NaiveProvider.vue'
-import NThemeConfig from '@/components/NThemeConfig.vue'
+import MyFloatingMenu from '@/components/my/MyFloatingMenu.vue'
 
 const dictionaryStore = useDictionaryStore()
 
@@ -26,10 +26,8 @@ onMounted(async () => {
         <router-view />
       </main>
 
-      <!-- 悬浮主题配置 -->
-      <div class="fixed bottom-6 right-6">
-        <NThemeConfig />
-      </div>
+      <!-- 悬浮导航 -->
+      <MyFloatingMenu />
     </div>
   </NaiveProvider>
 </template>
