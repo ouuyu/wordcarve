@@ -8,6 +8,7 @@ import './style.css'
 
 import 'vfonts/Lato.css'
 import 'vfonts/FiraCode.css'
+import './plugins/naive'
 
 const app = createApp(App)
 const pinia = createPinia()
