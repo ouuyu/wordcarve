@@ -65,7 +65,7 @@ const hasValidSenses = (def: any) => {
               expanded[`${def.part_of_speech}-${sense.sense_number}`] ? [sense.sense_number] : []
             "
             arrow-placement="left"
-            class="mb-3"
+            class="mb-3 px-3"
             :disabled="!sense.examples?.length"
             @update:expanded-names="
               sense.examples?.length
