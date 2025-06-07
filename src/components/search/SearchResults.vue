@@ -91,13 +91,13 @@ const handleExampleClick = (example: any) => {
       class="fallback-container"
     >
       <div
-        class="fallback-card rounded-xl border-0 shadow-lg bg-white/90 backdrop-blur-sm p-8 text-center"
+        class="fallback-card rounded-xl border-0 shadow-lg bg-theme-1/60 backdrop-blur-xl p-8 text-center"
       >
         <div class="fallback-icon mb-4">
-          <div class="i-carbon-unknown w-12 h-12 mx-auto text-gray-400" />
+          <div class="i-carbon-unknown w-12 h-12 mx-auto text-theme-5" />
         </div>
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">未知的词典类型</h3>
-        <p class="text-sm text-gray-500">当前选择的词典适配器类型不受支持</p>
+        <h3 class="text-lg font-semibold text-theme-9 mb-2">未知的词典类型</h3>
+        <p class="text-sm text-theme-7">当前选择的词典适配器类型不受支持</p>
       </div>
     </div>
   </div>
@@ -129,16 +129,17 @@ const handleExampleClick = (example: any) => {
 
 /* Dark mode support */
 .dark .fallback-card {
-  background: rgba(30, 30, 30, 0.95) !important;
+  background: var(--theme-9) !important;
+  opacity: 0.8 !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
 }
 
 .dark .fallback-card h3 {
-  color: #e5e7eb !important;
+  color: var(--theme-3) !important;
 }
 
 .dark .fallback-card p {
-  color: #9ca3af !important;
+  color: var(--theme-4) !important;
 }
 
 /* Responsive design */

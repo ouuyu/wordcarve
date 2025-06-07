@@ -40,21 +40,35 @@ const handleSearch = async (query?: string) => {
   }
 }
 
-// Watch route changes
+// Watch route changes - 监听URL参数变化
 watch(
   () => route.query.q,
   newQuery => {
-    if (newQuery && typeof newQuery === 'string' && newQuery !== searchQuery.value) {
-      searchQuery.value = newQuery
-      searchStore.setCurrentQuery(newQuery)
-      // Trigger search if we have a query but no results
-      if (!searchStore.hasResults) {
-        handleSearch(newQuery)
+    const queryString = newQuery && typeof newQuery === 'string' ? newQuery : ''
+    if (queryString !== searchQuery.value) {
+      searchQuery.value = queryString
+      searchStore.setCurrentQuery(queryString)
+      // 如果有查询参数但没有结果，触发搜索
+      if (queryString && !searchStore.hasResults) {
+        handleSearch(queryString)
       }
     }
   },
   { immediate: true },
 )
+
+// Watch search input changes - 监听搜索框输入变化，实时更新URL
+watch(searchQuery, newQuery => {
+  // 实时更新URL参数，实现真正的双向绑定
+  const currentUrlQuery = (route.query.q as string) || ''
+  if (newQuery !== currentUrlQuery) {
+    updateUrlQuery(newQuery)
+  }
+  // 同步到store
+  if (newQuery !== searchStore.currentQuery) {
+    searchStore.setCurrentQuery(newQuery)
+  }
+})
 
 // Watch search store current query
 watch(

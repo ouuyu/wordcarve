@@ -81,7 +81,10 @@ const handleRetry = () => {
     </NAlert>
 
     <!-- 无结果状态 -->
-    <NCard v-else-if="!hasResults && !loading">
+    <NCard
+      v-else-if="!hasResults && !loading"
+      class="border-0 shadow-lg bg-theme-1/60 backdrop-blur-xl"
+    >
       <NEmpty
         description="未找到相关词条"
         class="py-8"

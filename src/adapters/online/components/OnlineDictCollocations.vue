@@ -44,7 +44,8 @@ const props = defineProps<{ collocations?: CollocationGroup[] }>()
 
 <style scoped>
 .collocation-card {
-  background-color: #f9f9fb;
+  background: var(--theme-1);
+  opacity: 0.7;
 }
 
 .collocation-tag {
@@ -53,14 +54,15 @@ const props = defineProps<{ collocations?: CollocationGroup[] }>()
 }
 
 .collocation-tag:hover {
-  background-color: #eaecf3;
+  background-color: var(--theme-3);
 }
 
 :deep(.dark) .collocation-card {
-  background-color: rgba(30, 30, 46, 0.6);
+  background: var(--theme-8);
+  opacity: 0.8;
 }
 
 :deep(.dark) .collocation-tag:hover {
-  background-color: rgba(50, 50, 70, 0.6);
+  background-color: var(--theme-7);
 }
 </style>

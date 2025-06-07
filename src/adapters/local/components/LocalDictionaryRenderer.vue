@@ -48,7 +48,7 @@ const handleExampleClick = (example: any) => {
       class="w-full"
     >
       <NCard
-        class="rounded-2xl border-none shadow-xl bg-white/95 backdrop-blur-md transition-all duration-300"
+        class="rounded-2xl border-0 shadow-xl bg-theme-1/65 backdrop-blur-xl transition-all duration-300"
       >
         <div class="space-y-4 p-6">
           <div class="flex items-center space-x-3">
@@ -113,7 +113,7 @@ const handleExampleClick = (example: any) => {
           :key="`${entry.word}-${index}`"
           :style="{ animationDelay: `${index * 0.1}s` }"
         >
-          <NCard class="rounded-xl border-none shadow-md">
+          <NCard class="rounded-xl border-0 shadow-md bg-theme-1/60 backdrop-blur-lg">
             <WordDisplay
               :word="entry"
               mode="normal"
@@ -126,7 +126,7 @@ const handleExampleClick = (example: any) => {
     </div>
 
     <div v-else-if="query && !loading">
-      <NCard class="rounded-xl border-none shadow-lg bg-white/90 backdrop-blur-sm text-center">
+      <NCard class="rounded-xl border-0 shadow-lg bg-theme-1/60 backdrop-blur-xl text-center">
         <NEmpty
           description="本地词典未找到相关结果"
           size="large"
@@ -173,7 +173,7 @@ const handleExampleClick = (example: any) => {
     </div>
 
     <div v-else>
-      <NCard class="rounded-xl border-none shadow-lg bg-white/90 backdrop-blur-sm text-center">
+      <NCard class="rounded-xl border-0 shadow-lg bg-theme-1/60 backdrop-blur-xl text-center">
         <NEmpty
           description="输入单词开始本地搜索"
           size="large"
@@ -182,7 +182,7 @@ const handleExampleClick = (example: any) => {
           <template #icon>
             <NIcon
               size="48"
-              class="text-green-400"
+              class="text-theme-6"
             >
               <div class="i-carbon-data-base" />
             </NIcon>
@@ -191,7 +191,7 @@ const handleExampleClick = (example: any) => {
           <template #extra>
             <NText
               depth="3"
-              class="text-sm text-gray-500 mt-4"
+              class="text-sm text-theme-7 mt-4"
             >
               本地词典提供快速离线查询
             </NText>

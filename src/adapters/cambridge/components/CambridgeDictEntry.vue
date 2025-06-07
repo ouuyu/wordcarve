@@ -8,12 +8,12 @@ const props = defineProps<{
 </script>
 
 <template>
-  <NCard class="dict-entry-card">
+  <NCard class="dict-entry-card border-0 shadow-lg bg-theme-1/60 backdrop-blur-lg">
     <!-- 词条头部 -->
     <div class="dict-header">
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-3">
-          <h2 class="text-2xl font-bold text-primary">
+          <h2 class="text-2xl font-bold text-theme-9">
             {{ entry.word }}
           </h2>
 

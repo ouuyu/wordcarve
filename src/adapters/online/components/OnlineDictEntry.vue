@@ -29,13 +29,13 @@ const handleOpenExternalDictionary = (url: string) => {
 
 <template>
   <NCard
-    class="dict-entry-card"
+    class="dict-entry-card border-0 shadow-lg bg-theme-1/60 backdrop-blur-lg"
     hoverable
   >
     <!-- 单词头部信息 -->
     <div class="dict-header">
       <div class="flex items-center justify-between mb-2">
-        <h2 class="text-xl font-bold">{{ entry.headword }}</h2>
+        <h2 class="text-xl font-bold text-theme-9">{{ entry.headword }}</h2>
         <div v-if="entry.frequency">
           <FrequencyIndicator :level="frequencyLevel" />
         </div>
@@ -131,10 +131,8 @@ const handleOpenExternalDictionary = (url: string) => {
           :size="4"
           align="center"
         >
-          <span class="text-xs text-gray-500">
-            {{ wordFormMapping[form.type] || form.type }}:
-          </span>
-          <span class="font-medium">{{ form.form }}</span>
+          <span class="text-xs text-theme-7"> {{ wordFormMapping[form.type] || form.type }}: </span>
+          <span class="font-medium text-theme-9">{{ form.form }}</span>
         </NSpace>
       </NSpace>
 

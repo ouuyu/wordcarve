@@ -50,7 +50,7 @@ defineExpose({ focus: focusInput })
 
 <template>
   <div
-    class="group relative flex items-center w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-r from-white/95 to-white/90 backdrop-blur-md shadow-lg shadow-gray-200/50 ring-1 ring-gray-200/60 transition-all duration-300 ease-out focus-within:ring-2 focus-within:ring-blue-500/40 focus-within:shadow-xl focus-within:shadow-blue-200/30 hover:shadow-xl hover:shadow-gray-300/40 hover:ring-gray-300/70 hover:from-white/98 hover:to-white/95"
+    class="group relative flex items-center w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-theme-1/60 backdrop-blur-xl shadow-lg shadow-theme-3/10 border-0 transition-all duration-300 ease-out focus-within:bg-theme-1/70 focus-within:shadow-xl focus-within:shadow-theme-6/15 hover:shadow-xl hover:bg-theme-1/65"
   >
     <!-- 搜索图标/加载动画 -->
     <div class="flex-shrink-0 ml-3 sm:ml-5 w-4 h-4 sm:w-5 sm:h-5 transition-all duration-200">
@@ -66,12 +66,12 @@ defineExpose({ focus: focusInput })
         <div
           v-if="!loading"
           key="search"
-          class="i-carbon-search w-full h-full text-gray-400 group-focus-within:text-blue-500 group-hover:text-gray-500 transition-all duration-200 group-focus-within:scale-110"
+          class="i-carbon-search w-full h-full text-theme-6/70 group-focus-within:text-theme-6 group-hover:text-theme-7/80 transition-all duration-200 group-focus-within:scale-110"
         ></div>
         <div
           v-else
           key="loading"
-          class="w-full h-full border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"
+          class="w-full h-full border-2 border-theme-3/50 border-t-theme-6 rounded-full animate-spin"
         ></div>
       </Transition>
     </div>
@@ -83,16 +83,16 @@ defineExpose({ focus: focusInput })
       :placeholder="placeholder"
       :disabled="loading"
       @keydown.enter="handleSearch"
-      class="flex-1 border-none bg-transparent outline-none px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-gray-700 placeholder-gray-400 disabled:text-gray-500 font-medium"
+      class="flex-1 border-none bg-transparent outline-none px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-theme-9 placeholder-theme-6/60 disabled:text-theme-6/50 font-medium"
     />
 
     <!-- 清除按钮 (移动端显示) -->
     <button
       v-if="inputValue && !loading"
       @click="handleClear"
-      class="flex-shrink-0 mr-3 sm:mr-4 w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gray-200/80 hover:bg-gray-300/80 transition-all duration-200 active:scale-95 sm:hidden"
+      class="flex-shrink-0 mr-3 sm:mr-4 w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-theme-3/60 hover:bg-theme-4/70 transition-all duration-200 active:scale-95 sm:hidden"
     >
-      <div class="i-carbon-close w-3 h-3 text-gray-500"></div>
+      <div class="i-carbon-close w-3 h-3 text-theme-7"></div>
     </button>
   </div>
 </template>

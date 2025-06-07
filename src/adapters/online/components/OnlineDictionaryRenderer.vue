@@ -32,10 +32,6 @@ const handlePlayPronunciation = async (word: string, type: 'US' | 'UK') => {
   }
 }
 
-const openExternalDictionary = (url: string, word: string) => {
-  window.open(url + word, '_blank')
-}
-
 const handleRetry = () => {
   emit('retry')
 }
@@ -49,7 +45,7 @@ const handleRetry = () => {
     >
       <NSpin size="large">
         <template #description>
-          <div class="mt-16px text-[#666] text-16px dark:text-gray-200">正在搜索在线词典...</div>
+          <div class="mt-16px text-theme-7 text-16px dark:text-theme-3">正在搜索在线词典...</div>
         </template>
       </NSpin>
     </div>
@@ -87,7 +83,7 @@ const handleRetry = () => {
       class="flex justify-center items-center min-h-400px p-20px"
     >
       <NCard
-        class="result-card rd-xl border-0 shadow-lg bg-white/90 backdrop-blur-sm text-center w-full max-w-500px py-12"
+        class="result-card rd-xl border-0 shadow-lg bg-theme-1/60 backdrop-blur-xl text-center w-full max-w-500px py-12"
       >
         <NEmpty
           description="在线词典未找到相关结果"
@@ -97,7 +93,7 @@ const handleRetry = () => {
           <template #icon>
             <NIcon
               size="48"
-              class="text-gray-300"
+              class="text-theme-5"
             >
               <div class="i-carbon-cloud-offline" />
             </NIcon>
@@ -111,7 +107,7 @@ const handleRetry = () => {
             >
               <NText
                 depth="3"
-                class="text-sm text-gray-500"
+                class="text-sm text-theme-7"
               >
                 可以尝试在以下词典查找
               </NText>
@@ -164,7 +160,7 @@ const handleRetry = () => {
       class="flex justify-center items-center min-h-400px p-20px"
     >
       <NCard
-        class="result-card rd-xl border-0 shadow-lg bg-white/90 backdrop-blur-sm text-center w-full max-w-500px py-12"
+        class="result-card rd-xl border-0 shadow-lg bg-theme-1/60 backdrop-blur-xl text-center w-full max-w-500px py-12"
       >
         <NEmpty
           description="输入单词开始在线搜索"
@@ -174,7 +170,7 @@ const handleRetry = () => {
           <template #icon>
             <NIcon
               size="48"
-              class="text-blue-400"
+              class="text-theme-6"
             >
               <div class="i-carbon-cloud" />
             </NIcon>
@@ -183,7 +179,7 @@ const handleRetry = () => {
           <template #extra>
             <NText
               depth="3"
-              class="text-sm text-gray-500 mt-4"
+              class="text-sm text-theme-7 mt-4"
             >
               在线词典提供最新的词汇释义
             </NText>
@@ -206,7 +202,8 @@ const handleRetry = () => {
 }
 
 .dark .result-card {
-  background: rgba(30, 30, 30, 0.95) !important;
+  background: var(--theme-9) !important;
+  opacity: 0.8 !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
 }
 

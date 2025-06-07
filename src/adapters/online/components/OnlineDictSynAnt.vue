@@ -128,7 +128,8 @@ const props = defineProps<{ synonyms: any[]; antonyms: any[] }>()
 <style scoped>
 .synonym-card,
 .antonym-card {
-  background-color: #f9f9fb;
+  background: var(--theme-1);
+  opacity: 0.7;
   transition: all 0.2s ease;
 }
 
@@ -143,6 +144,7 @@ const props = defineProps<{ synonyms: any[]; antonyms: any[] }>()
 
 :deep(.dark) .synonym-card,
 :deep(.dark) .antonym-card {
-  background-color: rgba(30, 30, 46, 0.6);
+  background: var(--theme-8);
+  opacity: 0.8;
 }
 </style>

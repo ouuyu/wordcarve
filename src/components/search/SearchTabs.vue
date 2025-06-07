@@ -122,9 +122,9 @@ onMounted(() => {
 <template>
   <div class="w-full">
     <div
-      class="bg-white/95 backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-lg ring-1 ring-gray-200/50 overflow-hidden"
+      class="bg-theme-1/70 backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-lg border-0 overflow-hidden"
     >
-      <div class="p-4 sm:p-6 border-b border-gray-100/80">
+      <div class="p-4 sm:p-6 border-b border-theme-3/20">
         <div class="flex items-center gap-3 sm:gap-4">
           <SearchInput
             ref="searchInputRef"
@@ -149,14 +149,14 @@ onMounted(() => {
 
       <div class="p-3 sm:p-4">
         <div
-          class="flex gap-0.5 sm:gap-1 bg-gray-50/80 p-0.5 sm:p-1 rounded-lg sm:rounded-xl overflow-x-auto scrollbar-hide"
+          class="flex gap-0.5 sm:gap-1 bg-theme-2/60 p-0.5 sm:p-1 rounded-lg sm:rounded-xl overflow-x-auto scrollbar-hide"
         >
           <div
             v-for="adapter in tabsWithStatus"
             :key="adapter.name"
-            class="flex-1 flex items-center justify-center py-3 px-4 rounded-lg cursor-pointer relative transition-all duration-300 ease-out text-gray-600 hover:text-gray-800 hover:bg-white/60 min-w-0"
+            class="flex-1 flex items-center justify-center py-3 px-4 rounded-lg cursor-pointer relative transition-all duration-300 ease-out text-theme-7 hover:text-theme-9 hover:bg-theme-1/70 min-w-0"
             :class="{
-              'bg-white text-gray-900 shadow-md ring-1 ring-white/50 font-medium':
+              'bg-theme-1/80 text-theme-9 shadow-md border-0 font-medium':
                 searchStore.activeAdapter === adapter.name,
               'bg-transparent': searchStore.activeAdapter !== adapter.name,
               // 统一 padding，不再单独为小屏幕设置更大的垂直 padding
