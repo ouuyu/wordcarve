@@ -13,6 +13,12 @@ export interface Example {
   Chinese: string
 }
 
+export interface Idiom {
+  idiom: string
+  definition: Definition
+  examples?: Example[]
+}
+
 export interface Sense {
   sense_number: string
   sense_label: string
@@ -26,6 +32,7 @@ export interface DictionaryDefinition {
   part_of_speech: string
   senses?: Sense[]
   definitions?: string[]
+  idioms?: Idiom[]
 }
 
 export interface WordForm {
