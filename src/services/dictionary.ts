@@ -1,7 +1,7 @@
 import ky from 'ky'
 import { OnlineDictionaryEntry } from '@/types/dictionary'
 
-const API_BASE_URL = 'https://supabase.wordcarve.com/functions/v1'
+const API_BASE_URL = 'https://supabase.750750750.xyz/functions/v1'
 
 /**
  * 查询单词的在线词典数据
