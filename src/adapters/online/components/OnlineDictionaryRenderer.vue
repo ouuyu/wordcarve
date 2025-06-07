@@ -117,7 +117,6 @@ const handleRetry = () => {
                   :key="dict.name"
                   size="small"
                   secondary
-                  @click="openExternalDictionary(dict.url, query!)"
                   class="rd-lg"
                 >
                   <template #icon>
@@ -149,7 +148,7 @@ const handleRetry = () => {
             :entry="entry"
             :frequency-level="calculateFrequencyLevel(entry.frequency)"
             :play-pronunciation="handlePlayPronunciation"
-            :open-external-dictionary="openExternalDictionary"
+            :open-external-dictionary="() => {}"
           />
         </div>
       </div>

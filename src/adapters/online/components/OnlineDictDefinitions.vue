@@ -9,11 +9,13 @@ const props = defineProps<{
 
 const expanded = ref<Record<string, boolean>>({})
 
+// 切换例句的展开/收起状态
 const toggleExamples = (partOfSpeech: string, senseNumber: string) => {
   const key = `${partOfSpeech}-${senseNumber}`
   expanded.value[key] = !expanded.value[key]
 }
 </script>
+
 <template>
   <div class="dictionary-content mt-4">
     <div v-if="entry?.definitions">
@@ -36,21 +38,25 @@ const toggleExamples = (partOfSpeech: string, senseNumber: string) => {
           :expanded-names="
             expanded[`${def.part_of_speech}-${sense.sense_number}`] ? [sense.sense_number] : []
           "
-          @update:expanded-names="toggleExamples(def.part_of_speech, sense.sense_number)"
           arrow-placement="left"
-          class="mb-3 overflow-hidden transition-all duration-300 ease-in-out"
+          class="mb-3"
+          :disabled="!sense.examples?.length"
+          @update:expanded-names="
+            sense.examples?.length
+              ? toggleExamples(def.part_of_speech, sense.sense_number)
+              : undefined
+          "
         >
           <NCollapseItem :name="sense.sense_number">
             <template #header>
               <div class="flex items-center space-x-3 py-1">
                 <NText
                   type="primary"
-                  class="font-mono w-8 text-base"
+                  class="font-mono w-8 text-base ml-4"
                   >{{ sense.sense_number }}.</NText
                 >
                 <div class="flex-1 min-w-0">
                   <div class="flex items-center gap-2 mb-1">
-                    <!-- 语法标签 -->
                     <NSpace
                       v-if="sense.grammar_tags?.length"
                       :size="4"
@@ -66,7 +72,6 @@ const toggleExamples = (partOfSpeech: string, senseNumber: string) => {
                         {{ tag }}
                       </NTag>
                     </NSpace>
-                    <!-- 模式 -->
                     <NText
                       v-if="sense.pattern"
                       depth="3"
@@ -86,12 +91,12 @@ const toggleExamples = (partOfSpeech: string, senseNumber: string) => {
             </template>
             <div
               v-if="sense.examples?.length"
-              class="pl-10 pr-4 py-3 transition-all duration-200"
+              class="pl-10 pr-4 py-3"
             >
               <div
                 v-for="(example, index) in sense.examples"
                 :key="index"
-                class="mb-2 last:mb-0"
+                class="last:mb-0 mb-2"
               >
                 <div class="text-sm leading-relaxed">
                   <span class="text-gray-700 dark:text-gray-300">
@@ -116,23 +121,18 @@ const toggleExamples = (partOfSpeech: string, senseNumber: string) => {
   line-height: 1.8;
 }
 
-/* 折叠面板优化 */
 .n-collapse {
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eee;
 }
 
 .n-collapse-item__header {
-  @apply py-3 px-5 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700;
+  @apply px-4 py-3 bg-white hover:bg-gray-50;
   transition: background-color 0.2s ease;
 }
 
 .n-collapse-item__content-wrapper {
-  transition:
-    height 0.3s ease-in-out,
-    opacity 0.2s ease-in-out;
   overflow: hidden;
 }
 
@@ -140,44 +140,17 @@ const toggleExamples = (partOfSpeech: string, senseNumber: string) => {
   @apply p-0;
 }
 
-.n-collapse-item__content-wrapper--inactive {
-  opacity: 0;
-  height: 0 !important;
-}
-
-/* 折叠指示器优化 */
 .n-collapse-item__arrow {
-  @apply transition-transform duration-300;
+  @apply transition-transform duration-200;
 }
 
 .n-collapse-item__arrow--active {
-  @apply rotate-90;
+  transform: rotate(90deg);
 }
 
-/* 语法标签样式优化 */
 .n-tag--warning {
   background-color: #fef3c7 !important;
   color: #92400e !important;
   border: 1px solid #fbbf24 !important;
-}
-
-/* 暗色模式下的语法标签 */
-.dark .n-tag--warning {
-  background-color: #451a03 !important;
-  color: #fbbf24 !important;
-  border: 1px solid #92400e !important;
-}
-
-/* 增加整体间距 */
-.mb-6 {
-  margin-bottom: 2rem;
-}
-
-.mb-4 {
-  margin-bottom: 1.5rem;
-}
-
-.mb-3 {
-  margin-bottom: 1rem;
 }
 </style>
