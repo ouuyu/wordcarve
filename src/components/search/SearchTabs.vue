@@ -92,9 +92,9 @@ const getTabIcon = (
 const getTabIconColor = (status: (typeof tabsWithStatus.value)[0]) => {
   if (status.hasError) return '#ef4444' // red-500
   if (!status.available) return '#9ca3af' // gray-400
-  if (status.isSearching) return '#3b82f6' // blue-500，搜索中仍用蓝色表示活跃
+  if (status.isSearching) return '#3b82f6' // blue-500
   if (status.hasResults) return '#22c55e' // green-500
-  return '#6b7280' // gray-500 默认颜色
+  return '#6b7280' // gray-500
 }
 
 const getStatusIndicatorColor = (status: (typeof tabsWithStatus.value)[0]) => {
@@ -196,11 +196,6 @@ onMounted(() => {
                     v-if="adapter.status !== 'idle'"
                     class="w-2 h-2 rounded-full transition-all duration-300 ease-out shadow-sm flex-shrink-0"
                     :style="{ backgroundColor: getStatusIndicatorColor(adapter) }"
-                  />
-
-                  <div
-                    v-if="!adapter.available"
-                    class="absolute -top-1 -right-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-red-500 rounded-full border-2 border-white shadow-sm"
                   />
                 </div>
               </template>

@@ -18,6 +18,8 @@ export interface Sense {
   sense_label: string
   definition: Definition
   examples?: Example[]
+  grammar_tags?: string[]
+  pattern?: string
 }
 
 export interface DictionaryDefinition {
