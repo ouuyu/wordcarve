@@ -1,4 +1,4 @@
-import { BaseDictionaryAdapter } from './base'
+import { BaseDictionaryAdapter } from '../base'
 import type { DictionarySearchResult, OnlineDictionaryEntry } from '@/types/dictionary'
 import { queryWord } from '@/services/dictionary'
 

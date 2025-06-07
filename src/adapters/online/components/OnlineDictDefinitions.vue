@@ -1,195 +1,81 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { OnlineDictionaryEntry, DictionarySource } from '@/types/dictionary'
-import {
-  NTabs,
-  NTabPane,
-  NCollapse,
-  NCollapseItem,
-  NIcon,
-  NText,
-  NTag,
-  NList,
-  NListItem,
-  NDivider,
-} from 'naive-ui'
+import { ref } from 'vue'
+import { OnlineDictionaryEntry } from '@/types/dictionary'
+import { NTag, NText, NCollapse, NCollapseItem } from 'naive-ui'
 
 const props = defineProps<{
   entry: OnlineDictionaryEntry
 }>()
 
 const expanded = ref<Record<string, boolean>>({})
-const activeSource = ref<DictionarySource>('权威英汉双解')
 
-const availableSources = computed(() => {
-  const sources: DictionarySource[] = []
-  if (props.entry?.definitions?.['权威英汉双解']?.length) sources.push('权威英汉双解')
-  if (props.entry?.definitions?.['英汉']?.length) sources.push('英汉')
-  if (props.entry?.definitions?.['英英']?.length) sources.push('英英')
-  return sources
-})
-
-function toggleExample(key: string) {
+const toggleExamples = (partOfSpeech: string, senseNumber: string) => {
+  const key = `${partOfSpeech}-${senseNumber}`
   expanded.value[key] = !expanded.value[key]
 }
 </script>
-
 <template>
-  <div>
-    <!-- Dictionary Source Tabs -->
-    <NTabs
-      v-model:value="activeSource"
-      type="segment"
-      size="small"
-      animated
-    >
-      <NTabPane
-        v-for="source in availableSources"
-        :key="source"
-        :name="source"
+  <div class="dictionary-content mt-4">
+    <div v-if="entry?.definitions">
+      <div
+        v-for="def in entry.definitions"
+        :key="def.part_of_speech"
+        class="mb-6"
       >
-        <template>
-          <div class="flex items-center gap-2">
-            <NIcon>
-              <div
-                :class="{
-                  'i-carbon-translate': source !== '英英',
-                  'i-carbon-text-font': source === '英英',
-                }"
-              />
-            </NIcon>
-            {{ source }}
-          </div>
-        </template>
-      </NTabPane>
-    </NTabs>
-
-    <!-- Content -->
-    <div class="dictionary-content mt-4">
-      <!-- 权威英汉双解 -->
-      <div v-if="activeSource === '权威英汉双解' && entry?.definitions?.['权威英汉双解']">
-        <div
-          v-for="def in entry.definitions['权威英汉双解']"
-          :key="def.part_of_speech"
-          class="mb-4"
+        <NTag
+          size="small"
+          :bordered="false"
+          type="info"
+          class="mb-3"
         >
-          <NTag
-            size="small"
-            :bordered="false"
-            type="info"
-            class="mb-2"
-            >{{ def.part_of_speech }}</NTag
-          >
-
-          <div
-            v-for="sense in def.senses || []"
-            :key="sense.sense_number"
-            class="pl-4 mb-3"
-          >
-            <div class="flex items-baseline gap-2 mb-2">
-              <NText
-                type="primary"
-                class="font-mono"
-                >{{ sense.sense_number }}.</NText
-              >
-              <NText strong>{{ sense.sense_label }}</NText>
-            </div>
-
-            <div class="pl-4">
-              <p class="mb-2">
-                <NText>{{ sense.definition.Chinese }}</NText>
+          {{ def.part_of_speech }}
+        </NTag>
+        <NCollapse
+          v-for="sense in def.senses || []"
+          :key="sense.sense_number"
+          :expanded-names="
+            expanded[`${def.part_of_speech}-${sense.sense_number}`] ? [sense.sense_number] : []
+          "
+          @update:expanded-names="toggleExamples(def.part_of_speech, sense.sense_number)"
+          arrow-placement="left"
+          class="mb-1 overflow-hidden transition-all duration-300 ease-in-out"
+        >
+          <NCollapseItem :name="sense.sense_number">
+            <template #header>
+              <div class="flex items-center space-x-3">
                 <NText
-                  depth="3"
-                  class="ml-2 text-sm"
-                  >{{ sense.definition.English }}</NText
+                  type="primary"
+                  class="font-mono w-8 text-base"
+                  >{{ sense.sense_number }}.</NText
                 >
-              </p>
-
-              <NCollapse
-                v-if="sense.examples?.length"
-                :default-expanded-names="[]"
+                <div class="flex-1 min-w-0">
+                  <NText class="text-base">{{ sense.definition.Chinese }}</NText>
+                  <NText
+                    depth="3"
+                    class="ml-2 text-sm italic"
+                    >{{ sense.definition.English }}</NText
+                  >
+                </div>
+              </div>
+            </template>
+            <div
+              v-if="sense.examples?.length"
+              class="pl-10 pr-4 py-1 transition-all duration-200"
+            >
+              <div
+                v-for="(example, index) in sense.examples"
+                :key="index"
               >
-                <NCollapseItem
-                  :title="`${sense.examples.length} 个例句`"
-                  :name="sense.sense_number"
-                >
-                  <div class="space-y-3">
-                    <div
-                      v-for="(example, index) in sense.examples"
-                      :key="index"
-                      class="pl-3 py-1 border-l-2 border-gray-200 dark:border-gray-700"
-                    >
-                      <NText>{{ example.English }}</NText>
-                      <NText
-                        depth="3"
-                        class="block mt-1 text-sm"
-                        >{{ example.Chinese }}</NText
-                      >
-                    </div>
-                  </div>
-                </NCollapseItem>
-              </NCollapse>
+                <span>
+                  {{ example.English }}
+                </span>
+                <span class="text-gray ml-2">
+                  {{ example.Chinese }}
+                </span>
+              </div>
             </div>
-          </div>
-          <NDivider
-            v-if="
-              def !==
-              entry.definitions['权威英汉双解'][entry.definitions['权威英汉双解'].length - 1]
-            "
-          />
-        </div>
-      </div>
-
-      <!-- 英汉 -->
-      <div v-if="activeSource === '英汉' && entry?.definitions?.['英汉']">
-        <div
-          v-for="def in entry.definitions['英汉']"
-          :key="def.part_of_speech"
-          class="mb-4"
-        >
-          <NTag
-            size="small"
-            :bordered="false"
-            type="info"
-            class="mb-2"
-            >{{ def.part_of_speech }}</NTag
-          >
-
-          <NList bordered>
-            <NListItem
-              v-for="(definition, index) in def.definitions || []"
-              :key="index"
-            >
-              {{ definition }}
-            </NListItem>
-          </NList>
-        </div>
-      </div>
-
-      <!-- 英英 -->
-      <div v-if="activeSource === '英英' && entry?.definitions?.['英英']">
-        <div
-          v-for="def in entry.definitions['英英']"
-          :key="def.part_of_speech"
-          class="mb-4"
-        >
-          <NTag
-            size="small"
-            :bordered="false"
-            type="info"
-            class="mb-2"
-            >{{ def.part_of_speech }}</NTag
-          >
-
-          <NList bordered>
-            <NListItem
-              v-for="(definition, index) in def.definitions || []"
-              :key="index"
-            >
-              {{ definition }}
-            </NListItem>
-          </NList>
-        </div>
+          </NCollapseItem>
+        </NCollapse>
       </div>
     </div>
   </div>
@@ -198,5 +84,42 @@ function toggleExample(key: string) {
 <style scoped>
 .dictionary-content {
   min-height: 100px;
+  line-height: 1.7;
+}
+
+/* 折叠面板优化 */
+.n-collapse {
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.n-collapse-item__header {
+  @apply py-2.5 px-4 bg-gray-50 hover:bg-gray-100;
+}
+
+.n-collapse-item__content-wrapper {
+  transition:
+    height 0.3s ease-in-out,
+    opacity 0.2s ease-in-out;
+  overflow: hidden;
+}
+
+.n-collapse-item__content-inner {
+  @apply p-0;
+}
+
+.n-collapse-item__content-wrapper--inactive {
+  opacity: 0;
+  height: 0 !important;
+}
+
+/* 折叠指示器优化 */
+.n-collapse-item__arrow {
+  @apply transition-transform duration-300;
+}
+
+.n-collapse-item__arrow--active {
+  @apply rotate-90;
 }
 </style>

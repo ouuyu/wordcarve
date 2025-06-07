@@ -1,4 +1,4 @@
-import { BaseDictionaryAdapter } from './base'
+import { BaseDictionaryAdapter } from '../base'
 import type { DictionarySearchResult } from '@/types/dictionary'
 import type { DictionaryEntry } from '@/types'
 import { useDictionaryStore } from '@/stores/dictionaryStore'

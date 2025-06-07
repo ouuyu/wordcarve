@@ -44,11 +44,7 @@ export interface SynonymAntonymGroup {
 export interface OnlineDictionaryEntry {
   headword: string
   pronunciations: Pronunciation
-  definitions: {
-    权威英汉双解?: DictionaryDefinition[]
-    英汉?: DictionaryDefinition[]
-    英英?: DictionaryDefinition[]
-  }
+  definitions: DictionaryDefinition[]
   collocations?: CollocationGroup[]
   synonyms?: SynonymAntonymGroup[]
   antonyms?: SynonymAntonymGroup[]
@@ -93,4 +89,41 @@ export interface SearchHistory {
   query: string
   timestamp: number
   results: number
+}
+
+// Cambridge Dictionary Types
+export interface CambridgePronunciation {
+  pos: string
+  lang: 'us' | 'uk'
+  url: string
+  pron: string
+}
+
+export interface CambridgeVerb {
+  id: number
+  type: string
+  text: string
+}
+
+export interface CambridgeExample {
+  id: number
+  text: string
+  translation: string
+}
+
+export interface CambridgeDefinition {
+  id: number
+  pos: string
+  source: string
+  text: string
+  translation: string
+  example: CambridgeExample[]
+}
+
+export interface CambridgeDictionaryEntry {
+  word: string
+  pos: string[]
+  verbs?: CambridgeVerb[]
+  pronunciation: CambridgePronunciation[]
+  definition: CambridgeDefinition[]
 }

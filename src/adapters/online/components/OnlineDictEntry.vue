@@ -17,20 +17,6 @@ const props = defineProps<{
 
 const activeTab = ref<'definitions' | 'collocations' | 'synonyms'>('definitions')
 
-// 外部词典链接
-const externalDictionaries: ExternalDictionary[] = [
-  {
-    name: '剑桥词典',
-    url: 'https://dictionary.cambridge.org/dictionary/english/',
-    icon: 'i-carbon-book',
-  },
-  {
-    name: '柯林斯词典',
-    url: 'https://www.collinsdictionary.com/dictionary/english/',
-    icon: 'i-carbon-translate',
-  },
-]
-
 const handlePlayPronunciation = (type: 'US' | 'UK', event?: Event) => {
   if (event) event.stopPropagation()
   props.playPronunciation(props.entry.headword, type)
@@ -153,25 +139,6 @@ const handleOpenExternalDictionary = (url: string) => {
       </NSpace>
 
       <NDivider class="my-3" />
-
-      <!-- 外部词典链接 -->
-      <NSpace
-        wrap
-        :size="8"
-      >
-        <NButton
-          v-for="dict in externalDictionaries"
-          :key="dict.name"
-          size="small"
-          secondary
-          @click="handleOpenExternalDictionary(dict.url)"
-        >
-          <template #icon>
-            <div :class="dict.icon" />
-          </template>
-          {{ dict.name }}
-        </NButton>
-      </NSpace>
     </div>
 
     <!-- 内容标签页 -->

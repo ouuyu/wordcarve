@@ -4,6 +4,7 @@ import { useSearchStore } from '@/stores/searchStore'
 import { dictionaryManager } from '@/adapters/manager'
 import { OnlineDictionaryRenderer } from '@/adapters/online/components'
 import { LocalDictionaryRenderer } from '@/adapters/local/components'
+import { CambridgeDictionaryRenderer } from '@/adapters/cambridge/components'
 import type { DictionaryEntry } from '@/types'
 
 const searchStore = useSearchStore()
@@ -54,7 +55,17 @@ const handleExampleClick = (example: any) => {
   <div class="search-results">
     <!-- Online Dictionary Renderer -->
     <OnlineDictionaryRenderer
-      v-if="currentAdapter?.resultType === 'online'"
+      v-if="currentAdapter?.resultType === 'online' && currentAdapter?.name === 'online'"
+      :result="currentResult"
+      :error="currentError"
+      :loading="isLoading"
+      :query="searchStore.currentQuery"
+      @retry="handleRetry"
+    />
+
+    <!-- Cambridge Dictionary Renderer -->
+    <CambridgeDictionaryRenderer
+      v-else-if="currentAdapter?.name === 'cambridge'"
       :result="currentResult"
       :error="currentError"
       :loading="isLoading"

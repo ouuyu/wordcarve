@@ -1,6 +1,7 @@
 import type { DictionaryAdapter, DictionarySearchResult } from '@/types/dictionary'
 import { OnlineDictionaryAdapter } from './online'
 import { LocalDictionaryAdapter } from './local'
+import { CambridgeDictionaryAdapter } from './cambridge'
 
 /**
  * Dictionary adapter manager
@@ -12,6 +13,7 @@ export class DictionaryAdapterManager {
   constructor() {
     this.registerAdapter(new OnlineDictionaryAdapter())
     this.registerAdapter(new LocalDictionaryAdapter())
+    this.registerAdapter(new CambridgeDictionaryAdapter())
   }
 
   /**
