@@ -4,9 +4,9 @@ import { OnlineDictionaryEntry, ExternalDictionary } from '@/types/dictionary'
 import { wordFormMapping, getTagDisplay } from '@/services/dictionary'
 import { NCard, NTabs, NTabPane, NTag, NSpace, NButton, NDivider, NBadge, NTooltip } from 'naive-ui'
 import FrequencyIndicator from '@/components/dictionary/FrequencyIndicator.vue'
-import OnlineDictDefinitions from '@/components/dictionary/onlineDict/OnlineDictDefinitions.vue'
-import OnlineDictCollocations from '@/components/dictionary/onlineDict/OnlineDictCollocations.vue'
-import OnlineDictSynAnt from '@/components/dictionary/onlineDict/OnlineDictSynAnt.vue'
+import OnlineDictDefinitions from './OnlineDictDefinitions.vue'
+import OnlineDictCollocations from './OnlineDictCollocations.vue'
+import OnlineDictSynAnt from './OnlineDictSynAnt.vue'
 
 const props = defineProps<{
   entry: OnlineDictionaryEntry

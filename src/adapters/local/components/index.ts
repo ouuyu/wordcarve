@@ -1,0 +1,8 @@
+export { default as LocalDictionaryRenderer } from './LocalDictionaryRenderer.vue'
+export { default as WordDisplay } from './WordDisplay.vue'
+export { default as WordDisplayMini } from './WordDisplayMini.vue'
+export { default as WordForms } from './WordForms.vue'
+export { default as WordHeader } from './WordHeader.vue'
+export { default as WordMeanings } from './WordMeanings.vue'
+export { default as WordTags } from './WordTags.vue'
+export { default as WordUsages } from './WordUsages.vue'

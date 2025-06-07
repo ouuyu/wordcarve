@@ -17,6 +17,11 @@ const routes: RouteRecordRaw[] = [
     name: 'Settings',
     component: () => import('../views/Settings.vue'),
   },
+  {
+    path: '/test-local',
+    name: 'TestLocal',
+    component: () => import('../test-local-dictionary.vue'),
+  },
 ]
 
 const router = createRouter({

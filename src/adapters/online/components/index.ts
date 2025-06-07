@@ -1,0 +1,5 @@
+export { default as OnlineDictionaryRenderer } from './OnlineDictionaryRenderer.vue'
+export { default as OnlineDictEntry } from './OnlineDictEntry.vue'
+export { default as OnlineDictDefinitions } from './OnlineDictDefinitions.vue'
+export { default as OnlineDictCollocations } from './OnlineDictCollocations.vue'
+export { default as OnlineDictSynAnt } from './OnlineDictSynAnt.vue'

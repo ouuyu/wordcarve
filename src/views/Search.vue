@@ -1,76 +1,196 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { NBackTop } from 'naive-ui'
 import { Message } from '@/utils/message'
-import OnlineDictionary from '@/components/dictionary/OnlineDictionary.vue'
+import { useSearchStore } from '@/stores/searchStore'
+import SearchTabs from '@/components/search/SearchTabs.vue'
+import SearchResults from '@/components/search/SearchResults.vue'
 
-const searchQuery = ref('')
-const searchInputRef = ref<HTMLInputElement | null>(null)
 const route = useRoute()
 const router = useRouter()
+const searchStore = useSearchStore()
+const searchTabsRef = ref<InstanceType<typeof SearchTabs>>()
 
+// Reactive state
+const searchQuery = ref('')
+
+// Methods - Define functions before using them in watchers
+const updateUrlQuery = (query: string) => {
+  router.replace({ query: { q: query } }).catch(() => {})
+}
+
+const handleSearch = async (query?: string) => {
+  const searchTerm = query || searchQuery.value.trim()
+
+  if (!searchTerm) {
+    Message.warning('请输入要查询的单词')
+    return
+  }
+
+  // Update URL
+  updateUrlQuery(searchTerm)
+
+  // Perform progressive search in all dictionaries
+  try {
+    await searchStore.searchProgressive(searchTerm)
+  } catch (error) {
+    console.error('Search failed:', error)
+    Message.error('搜索失败，请稍后重试')
+  }
+}
+
+// Watch route changes
 watch(
   () => route.query.q,
   newQuery => {
     if (newQuery && typeof newQuery === 'string' && newQuery !== searchQuery.value) {
       searchQuery.value = newQuery
+      searchStore.setCurrentQuery(newQuery)
+      // Trigger search if we have a query but no results
+      if (!searchStore.hasResults) {
+        handleSearch(newQuery)
+      }
     }
   },
   { immediate: true },
 )
 
-function updateUrlQuery(query: string) {
-  router.replace({ query: { q: query } }).catch(() => {})
+// Watch search store current query
+watch(
+  () => searchStore.currentQuery,
+  newQuery => {
+    if (newQuery !== searchQuery.value) {
+      searchQuery.value = newQuery
+    }
+  },
+)
+
+const handleClear = () => {
+  searchQuery.value = ''
+  searchStore.clearResults()
+  router.replace({ query: {} }).catch(() => {})
 }
 
-function handleSearch() {
-  const trimmedQuery = searchQuery.value.trim()
-  if (!trimmedQuery) {
-    Message.warning('请输入要查询的单词')
-    return
-  }
-  updateUrlQuery(trimmedQuery)
+const focusSearchInput = () => {
+  searchTabsRef.value?.focus()
 }
+
+// Lifecycle
+onMounted(() => {
+  nextTick(() => {
+    focusSearchInput()
+  })
+
+  // If we have a query from URL, trigger search
+  if (searchQuery.value && !searchStore.hasResults) {
+    handleSearch(searchQuery.value)
+  }
+})
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto px-4 py-8 space-y-8">
-    <div class="space-y-6">
-      <div class="flex gap-3 items-center">
-        <div class="flex-1 relative">
-          <input
-            ref="searchInputRef"
-            v-model="searchQuery"
-            type="text"
-            class="w-full h-14 px-12 text-lg rounded-3xl bg-white/95 dark:bg-zinc-800/95 border border-gray-200 dark:border-zinc-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200"
-            placeholder="输入英文单词，按回车查询..."
-            @keyup.enter="handleSearch"
-            autocomplete="off"
-            spellcheck="false"
-          />
-          <div
-            class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-xl i-carbon-search pointer-events-none"
+  <div class="min-h-100vh bg-gradient-to-br from-blue-50/30 via-white to-purple-50/20">
+    <!-- 主要内容区域 -->
+    <div class="relative z-5 p-6 min-h-screen">
+      <div class="max-w-1200px mx-auto flex flex-col gap-8">
+        <!-- 整合的搜索和标签页组件 -->
+        <div class="animate-slideInDown">
+          <SearchTabs
+            ref="searchTabsRef"
+            :search-query="searchQuery"
+            :loading="searchStore.isSearching"
+            @update:search-query="searchQuery = $event"
+            @search="handleSearch"
+            @clear="handleClear"
           />
         </div>
-        <button
-          class="flex items-center h-14 px-8 text-lg font-medium rounded-3xl bg-blue-500 hover:bg-blue-600 text-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-200"
-          @click="handleSearch"
+
+        <!-- 搜索结果区域 -->
+        <div
+          v-if="searchStore.currentQuery"
+          class="animate-slideInUp animate-delay-100 animate-both"
         >
-          <div
-            i-carbon-search
-            class="mr-2"
-          />
-          查询
-        </button>
+          <SearchResults />
+        </div>
+
+        <!-- 空状态提示 -->
+        <div
+          v-else
+          class="flex flex-col items-center justify-center py-20 text-center"
+        >
+          <div class="w-24 h-24 mb-6 text-gray-300">
+            <div class="i-carbon-search w-full h-full"></div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-600 mb-2">开始搜索单词</h3>
+          <p class="text-gray-500 max-w-md">
+            在上方搜索框中输入英文单词，系统将自动在所有可用词典中进行搜索
+          </p>
+        </div>
       </div>
     </div>
 
-    <div class="pt-4">
-      <OnlineDictionary
-        v-if="searchQuery"
-        :query="searchQuery"
-        class="p-6 rounded-2xl bg-white/90 dark:bg-zinc-800/90 backdrop-blur-sm shadow-lg border border-gray-100/80 dark:border-zinc-700/80"
-      />
-    </div>
+    <NBackTop
+      :right="40"
+      :bottom="40"
+    />
   </div>
 </template>
+
+<style scoped>
+/* 动画效果 */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 新增的搜索动画 */
+@keyframes pulse-subtle {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.005);
+    opacity: 0.98;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 1.5s infinite ease-in-out;
+}
+
+@keyframes search-progress {
+  0% {
+    transform: scaleX(0);
+  }
+  50% {
+    transform: scaleX(0.7);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.animate-search-progress {
+  animation: search-progress 1.5s infinite linear; /* 模拟进度条，无限循环直到搜索完成 */
+}
+</style>

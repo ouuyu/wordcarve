@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DictionaryEntry } from '@/types'
 import { useDictionaryEntry } from '@/composables/useDictionaryEntry'
+import { onMounted } from 'vue'
 
 // 导入子组件
 import WordDisplayMini from './WordDisplayMini.vue'
@@ -20,6 +21,20 @@ const emit = defineEmits<{
   (e: 'click', word: DictionaryEntry): void
   (e: 'example-click', example: any): void
 }>()
+
+// 添加调试信息
+onMounted(() => {
+  console.log('WordDisplay mounted with word:', props.word)
+  console.log('Word structure:', {
+    word: props.word.word,
+    phonetic: props.word.phonetic,
+    definition: props.word.definition,
+    translation: props.word.translation,
+    meanings: props.word.meanings,
+    pos: props.word.pos,
+    tag: props.word.tag,
+  })
+})
 
 const {
   isMiniMode,

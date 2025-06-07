@@ -17,7 +17,7 @@ interface MeaningGroup {
 defineProps<{
   word: DictionaryEntry
   mergedMeanings: MeaningGroup[]
-  selectedMeaning: { groupIdx: number, meaningIdx: number } | null
+  selectedMeaning: { groupIdx: number; meaningIdx: number } | null
   isMeaningSelected: (groupIdx: number, meaningIdx: number) => boolean
 }>()
 
@@ -37,21 +37,48 @@ function handleExampleClick(example: any, event: MouseEvent) {
 
 <template>
   <div class="space-y-4">
-    <!-- Traditional Translation -->
-    <div v-if="!word.meanings?.length && word.translation?.length" class="mb-4">
-      <h3 class="mb-2 text-gray-500 font-medium">
-        传统释义
-      </h3>
+    <div
+      v-if="!word.meanings?.length && word.translation?.length"
+      class="mb-4"
+    >
+      <h3 class="mb-2 text-gray-500 font-medium">传统释义</h3>
       <div class="space-y-1">
-        <p v-for="(trans, index) in word.translation" :key="index" class="text-gray-700">
+        <p
+          v-for="(trans, index) in word.translation"
+          :key="index"
+          class="text-gray-700"
+        >
           {{ trans }}
         </p>
       </div>
     </div>
 
+    <!-- Fallback to definition if no translation -->
+    <div
+      v-else-if="!word.meanings?.length && !word.translation?.length && word.definition?.length"
+      class="mb-4"
+    >
+      <h3 class="mb-2 text-gray-500 font-medium">词义</h3>
+      <div class="space-y-1">
+        <p
+          v-for="(def, index) in word.definition"
+          :key="index"
+          class="text-gray-700"
+        >
+          {{ def }}
+        </p>
+      </div>
+    </div>
+
     <!-- Detailed Meanings -->
-    <div v-if="mergedMeanings.length" class="space-y-1">
-      <div v-for="(group, groupIdx) in mergedMeanings" :key="group.part_of_speech">
+    <div
+      v-if="mergedMeanings.length"
+      class="space-y-1"
+    >
+      <div
+        v-for="(group, groupIdx) in mergedMeanings"
+        :key="group.part_of_speech"
+      >
         <div class="flex items-start">
           <span class="w-[2.5rem] flex py-1 text-gray-500">{{ group.part_of_speech }}</span>
           <div class="flex flex-wrap">
@@ -73,14 +100,14 @@ function handleExampleClick(example: any, event: MouseEvent) {
         <transition name="slide-fade">
           <div
             v-if="
-              isMeaningSelected(groupIdx, selectedMeaning?.meaningIdx ?? -1)
-                && group.allExamples.length
+              isMeaningSelected(groupIdx, selectedMeaning?.meaningIdx ?? -1) &&
+              group.allExamples.length
             "
             class="mb-2 ml-9 mt-1 border-l-2 border-gray-200 pl-4 transition-all"
           >
             <div
               v-for="(exGroup, exIdx) in group.allExamples.filter(
-                (eg) => group.meanings[selectedMeaning?.meaningIdx ?? 0] === eg.meaning,
+                eg => group.meanings[selectedMeaning?.meaningIdx ?? 0] === eg.meaning,
               )"
               :key="exIdx"
               class="mb-3"
@@ -100,6 +127,13 @@ function handleExampleClick(example: any, event: MouseEvent) {
           </div>
         </transition>
       </div>
+    </div>
+
+    <div
+      v-if="!word.meanings?.length && !word.translation?.length && !word.definition?.length"
+      class="text-gray-500 text-sm"
+    >
+      暂无释义信息
     </div>
   </div>
 </template>
