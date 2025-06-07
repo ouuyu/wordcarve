@@ -90,50 +90,39 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-100vh bg-gradient-to-br from-blue-50/30 via-white to-purple-50/20">
-    <!-- 主要内容区域 -->
-    <div class="relative z-5 p-6 min-h-screen">
-      <div class="max-w-1200px mx-auto flex flex-col gap-8">
-        <!-- 整合的搜索和标签页组件 -->
-        <div class="animate-slideInDown">
-          <SearchTabs
-            ref="searchTabsRef"
-            :search-query="searchQuery"
-            :loading="searchStore.isSearching"
-            @update:search-query="searchQuery = $event"
-            @search="handleSearch"
-            @clear="handleClear"
-          />
-        </div>
+  <div class="relative z-5 p-4 sm:p-6 min-h-screen">
+    <div class="max-w-1200px mx-auto flex flex-col gap-1">
+      <div class="animate-slideInDown">
+        <SearchTabs
+          ref="searchTabsRef"
+          :search-query="searchQuery"
+          :loading="searchStore.isSearching"
+          @update:search-query="searchQuery = $event"
+          @search="handleSearch"
+          @clear="handleClear"
+        />
+      </div>
 
-        <!-- 搜索结果区域 -->
-        <div
-          v-if="searchStore.currentQuery"
-          class="animate-slideInUp animate-delay-100 animate-both"
-        >
-          <SearchResults />
-        </div>
+      <div
+        v-if="searchStore.currentQuery"
+        class="animate-slideInUp animate-delay-100 animate-both"
+      >
+        <SearchResults />
+      </div>
 
-        <!-- 空状态提示 -->
-        <div
-          v-else
-          class="flex flex-col items-center justify-center py-20 text-center"
-        >
-          <div class="w-24 h-24 mb-6 text-gray-300">
-            <div class="i-carbon-search w-full h-full"></div>
-          </div>
-          <h3 class="text-xl font-semibold text-gray-600 mb-2">开始搜索单词</h3>
-          <p class="text-gray-500 max-w-md">
-            在上方搜索框中输入英文单词，系统将自动在所有可用词典中进行搜索
-          </p>
+      <div
+        v-else
+        class="flex flex-col items-center justify-center py-12 sm:py-20 text-center px-4"
+      >
+        <div class="w-16 h-16 sm:w-24 sm:h-24 mb-4 sm:mb-6 text-gray-300">
+          <div class="i-carbon-search w-full h-full"></div>
         </div>
+        <h3 class="text-lg sm:text-xl font-semibold text-gray-600 mb-2">开始搜索单词</h3>
+        <p class="text-sm sm:text-base text-gray-500 max-w-md">
+          在上方搜索框中输入英文单词，将在所有可用词典中进行搜索
+        </p>
       </div>
     </div>
-
-    <NBackTop
-      :right="40"
-      :bottom="40"
-    />
   </div>
 </template>
 
@@ -161,7 +150,6 @@ onMounted(() => {
   }
 }
 
-/* 新增的搜索动画 */
 @keyframes pulse-subtle {
   0%,
   100% {
@@ -191,6 +179,6 @@ onMounted(() => {
 }
 
 .animate-search-progress {
-  animation: search-progress 1.5s infinite linear; /* 模拟进度条，无限循环直到搜索完成 */
+  animation: search-progress 1.5s infinite linear;
 }
 </style>

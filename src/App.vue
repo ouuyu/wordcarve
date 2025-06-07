@@ -22,7 +22,7 @@ onMounted(async () => {
   <NaiveProvider>
     <div class="bg-theme-1 min-h-screen flex flex-col">
       <!-- 主区域 -->
-      <main class="mx-auto max-w-1200px w-full flex-1 p-8">
+      <main class="mx-auto max-w-1200px w-full flex-1 p-4 sm:p-8">
         <router-view />
       </main>
 

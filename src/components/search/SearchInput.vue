@@ -50,10 +50,10 @@ defineExpose({ focus: focusInput })
 
 <template>
   <div
-    class="group relative flex items-center w-full h-14 rounded-2xl bg-gradient-to-r from-white/95 to-white/90 backdrop-blur-md shadow-lg shadow-gray-200/50 ring-1 ring-gray-200/60 transition-all duration-300 ease-out focus-within:ring-2 focus-within:ring-blue-500/40 focus-within:shadow-xl focus-within:shadow-blue-200/30 hover:shadow-xl hover:shadow-gray-300/40 hover:ring-gray-300/70 hover:from-white/98 hover:to-white/95"
+    class="group relative flex items-center w-full h-12 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-r from-white/95 to-white/90 backdrop-blur-md shadow-lg shadow-gray-200/50 ring-1 ring-gray-200/60 transition-all duration-300 ease-out focus-within:ring-2 focus-within:ring-blue-500/40 focus-within:shadow-xl focus-within:shadow-blue-200/30 hover:shadow-xl hover:shadow-gray-300/40 hover:ring-gray-300/70 hover:from-white/98 hover:to-white/95"
   >
     <!-- 搜索图标/加载动画 -->
-    <div class="flex-shrink-0 ml-5 w-5 h-5 transition-all duration-200">
+    <div class="flex-shrink-0 ml-3 sm:ml-5 w-4 h-4 sm:w-5 sm:h-5 transition-all duration-200">
       <Transition
         enter-active-class="transition-all duration-300 ease-out"
         enter-from-class="opacity-0 scale-75 rotate-45"
@@ -83,7 +83,16 @@ defineExpose({ focus: focusInput })
       :placeholder="placeholder"
       :disabled="loading"
       @keydown.enter="handleSearch"
-      class="flex-1 border-none bg-transparent outline-none px-4 py-3 text-base text-gray-700 placeholder-gray-400 disabled:text-gray-500 font-medium"
+      class="flex-1 border-none bg-transparent outline-none px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-gray-700 placeholder-gray-400 disabled:text-gray-500 font-medium"
     />
+
+    <!-- 清除按钮 (移动端显示) -->
+    <button
+      v-if="inputValue && !loading"
+      @click="handleClear"
+      class="flex-shrink-0 mr-3 sm:mr-4 w-6 h-6 sm:w-5 sm:h-5 flex items-center justify-center rounded-full bg-gray-200/80 hover:bg-gray-300/80 transition-all duration-200 active:scale-95 sm:hidden"
+    >
+      <div class="i-carbon-close w-3 h-3 text-gray-500"></div>
+    </button>
   </div>
 </template>

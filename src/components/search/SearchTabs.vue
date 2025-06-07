@@ -122,16 +122,16 @@ onMounted(() => {
 <template>
   <div class="w-full">
     <div
-      class="bg-white/95 backdrop-blur-lg rounded-2xl shadow-lg ring-1 ring-gray-200/50 overflow-hidden"
+      class="bg-white/95 backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-lg ring-1 ring-gray-200/50 overflow-hidden"
     >
-      <div class="p-6 border-b border-gray-100/80">
-        <div class="flex items-center gap-4">
+      <div class="p-4 sm:p-6 border-b border-gray-100/80">
+        <div class="flex items-center gap-3 sm:gap-4">
           <SearchInput
             ref="searchInputRef"
             :model-value="searchQuery"
             :loading="loading"
             placeholder="输入英文单词，自动搜索所有词典..."
-            class="flex-1 text-lg"
+            class="flex-1"
             @update:model-value="handleSearchInput"
             @search="handleSearch"
             @clear="handleClear"
@@ -142,29 +142,34 @@ onMounted(() => {
             class="flex items-center gap-2 text-theme-9 text-sm font-medium"
           >
             <NSpin size="small" />
-            <span>搜索中...</span>
+            <span class="hidden sm:inline">搜索中...</span>
           </div>
         </div>
       </div>
 
-      <!-- 标签页区域 -->
-      <div class="p-4">
-        <div class="flex gap-1 bg-gray-50/80 p-1 rounded-xl">
+      <div class="p-3 sm:p-4">
+        <div
+          class="flex gap-0.5 sm:gap-1 bg-gray-50/80 p-0.5 sm:p-1 rounded-lg sm:rounded-xl overflow-x-auto scrollbar-hide"
+        >
           <div
             v-for="adapter in tabsWithStatus"
             :key="adapter.name"
-            class="flex-1 flex items-center justify-center py-3 px-4 rounded-lg cursor-pointer relative transition-all duration-300 ease-out text-gray-600 hover:text-gray-800 hover:bg-white/60"
+            class="flex-1 flex items-center justify-center py-3 px-4 rounded-lg cursor-pointer relative transition-all duration-300 ease-out text-gray-600 hover:text-gray-800 hover:bg-white/60 min-w-0"
             :class="{
               'bg-white text-gray-900 shadow-md ring-1 ring-white/50 font-medium':
                 searchStore.activeAdapter === adapter.name,
               'bg-transparent': searchStore.activeAdapter !== adapter.name,
+              // 统一 padding，不再单独为小屏幕设置更大的垂直 padding
+              'py-3 px-4': true,
+              // 移除 min-h-16，让内容自然撑开高度
+              'sm:min-h-auto': true,
             }"
             @click="handleTabChange(adapter.name)"
           >
             <NTooltip>
               <template #trigger>
-                <div class="flex items-center gap-3 relative">
-                  <div class="w-5 h-5 flex items-center justify-center">
+                <div class="flex items-center gap-2 sm:gap-3 relative w-full justify-center">
+                  <div class="w-5 h-5 flex items-center justify-center flex-shrink-0">
                     <NSpin
                       v-if="checkingAvailability || adapter.isSearching"
                       size="small"
@@ -178,23 +183,24 @@ onMounted(() => {
                             ? '#1f2937'
                             : getTabIconColor(adapter),
                       }"
-                      class="text-lg transition-colors duration-300 ease-out"
+                      class="text-lg sm:text-lg transition-colors duration-300 ease-out"
                     />
                   </div>
 
-                  <span class="font-medium text-sm whitespace-nowrap">{{
-                    adapter.displayName
-                  }}</span>
+                  <span
+                    class="font-medium text-sm whitespace-nowrap truncate flex-shrink min-w-0 sm:text-sm text-xs"
+                    >{{ adapter.displayName }}</span
+                  >
 
                   <div
                     v-if="adapter.status !== 'idle'"
-                    class="w-2.5 h-2.5 rounded-full transition-all duration-300 ease-out shadow-sm"
+                    class="w-2 h-2 rounded-full transition-all duration-300 ease-out shadow-sm flex-shrink-0"
                     :style="{ backgroundColor: getStatusIndicatorColor(adapter) }"
                   />
 
                   <div
                     v-if="!adapter.available"
-                    class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white shadow-sm"
+                    class="absolute -top-1 -right-1 w-2 h-2 sm:w-2.5 sm:h-2.5 bg-red-500 rounded-full border-2 border-white shadow-sm"
                   />
                 </div>
               </template>
@@ -247,9 +253,56 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- 结果显示区域 -->
     <div class="mt-6">
       <slot :name="searchStore.activeAdapter"></slot>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* 隐藏滚动条但保持滚动功能 */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  /* 在小屏幕上，tab 选项的最小宽度调整为 70px，flex 属性改为 0 0 auto */
+  .flex-1 {
+    min-width: 70px; /* 调整为更小的最小宽度 */
+    flex: 0 0 auto;
+  }
+
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  .cursor-pointer {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .cursor-pointer:active {
+    transform: scale(0.98);
+  }
+
+  /* 在小屏幕上，文本最大宽度调整为 50px */
+  .truncate {
+    max-width: 50px; /* 调整为更小的最大宽度 */
+  }
+
+  .w-2.h-2 {
+    margin-left: 2px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .flex-1 {
+    min-width: 100px;
+  }
+}
+</style>
